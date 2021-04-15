@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import YouTube from "@u-wave/react-youtube";
-
-import Loading from "./Loading";
 import VideoBoxMessage from "./VideoBoxMessage";
 
 function VideoBox({
@@ -9,42 +7,33 @@ function VideoBox({
   videoRelevantData,
   setVideoRelevantData,
   playRange,
-  isLoading,
-  setIsLoading,
   searched,
   setSearched,
-  videoErrorState,
-  setVideoErrorState,
-  playerVirtualDOM,
+  pageStatus,
+  setPageStatus,
   setPlayerVirtualDOM,
 }) {
   let [messageToShow, setMessageToShow] = useState();
 
   useEffect(() => {
-    if (!isLoading && searched && !videoErrorState && playerVirtualDOM) {
+    if (pageStatus && pageStatus !== "error") {
       setMessageToShow();
-    } else if (
-      !isLoading &&
-      searched &&
-      (videoErrorState || !playerVirtualDOM)
-    ) {
+    } else if (pageStatus && pageStatus === "error") {
       setMessageToShow("error");
-    } else if (!isLoading && !searched && playerVirtualDOM) {
+    } else {
       setMessageToShow("clean");
     }
-  }, [playerVirtualDOM, searched, videoErrorState, isLoading]);
+  }, [pageStatus]);
 
   function handleReady(event) {
     setPlayerVirtualDOM(event.target);
-    setIsLoading(false);
   }
 
   function handlePlaying(event) {
     handleSetVideoData(event.target);
     document.getElementById("yt-iframe").classList.remove("d-none");
     !searched && setSearched(true);
-    setIsLoading(false);
-    setVideoErrorState(false);
+    setPageStatus("succesfull");
   }
 
   function handleEnding(event) {
@@ -53,8 +42,7 @@ function VideoBox({
 
   function handleError() {
     document.getElementById("yt-iframe").classList.add("d-none");
-    videoID && setVideoErrorState(true) && !searched && setSearched(true);
-    setIsLoading(false);
+    videoID && setPageStatus("error") && !searched && setSearched(true);
   }
 
   function handleSetVideoData(player) {
@@ -68,7 +56,6 @@ function VideoBox({
 
   return (
     <React.Fragment>
-      <Loading isLoading={isLoading} />
       <VideoBoxMessage
         shouldShow={!!messageToShow}
         whatToShow={messageToShow}

@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
+import StatusBar from "../components/StatusBar";
 import Home from "../pages/Home";
-import Layout from "./Layout";
+import Footer from "./Footer";
 
 function App() {
+  let [pageStatus, setPageStatus] = useState();
+
   return (
-    <Layout>
-      <Home />
-    </Layout>
+    <>
+      <StatusBar state={pageStatus} />
+      <Home pageStatus={pageStatus} setPageStatus={setPageStatus} />
+      <Footer />
+    </>
   );
 }
 

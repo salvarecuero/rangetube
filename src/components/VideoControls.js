@@ -6,11 +6,14 @@ function VideoControls({
   player,
   searched,
   videoErrorState,
+  pageStatus,
+  setPageStatus,
   videoDuration,
   playRange,
   setPlayRange,
 }) {
   function handlePlayerVarsChange(values) {
+    setPageStatus("loading");
     setPlayRange({
       startSeconds: values[0],
       endSeconds: values[1],
@@ -18,12 +21,13 @@ function VideoControls({
   }
 
   function handleChangingValues(values) {
+    setPageStatus("loading");
     playRange.startSeconds !== values[0]
       ? player.seekTo(values[0])
       : player.seekTo(values[1]);
   }
 
-  if (searched && !videoErrorState && videoDuration) {
+  if (searched && !videoErrorState && pageStatus !== "error" && videoDuration) {
     return (
       <div className="row justify-content-center">
         <div className="col-4 text-center">

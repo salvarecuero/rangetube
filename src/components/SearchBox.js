@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 
-function SearchBox({ setVideoURL, setVideoErrorState }) {
+function SearchBox({ setVideoURL, setPageStatus }) {
   let [searchValue, setSearchValue] = useState("");
 
   function handleSearchSubmit() {
     if (searchValue) {
+      console.log("hmmm");
       const newID = parseIdFromURL(searchValue);
 
-      setVideoURL(newID);
+      newID
+        ? setVideoURL(newID) && setPageStatus("loading")
+        : setPageStatus("error") &&
+          document.getElementById("yt-iframe").classList.add("d-none");
     } else {
-      setVideoErrorState(true);
+      setPageStatus("error");
     }
   }
 
