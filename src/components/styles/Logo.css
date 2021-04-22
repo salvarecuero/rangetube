@@ -1,0 +1,15 @@
+.logo-row {
+  padding-top: 10px;
+}
+
+a {
+  cursor: inherit;
+}
+
+img {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}

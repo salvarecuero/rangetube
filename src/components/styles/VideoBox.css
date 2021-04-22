@@ -1,0 +1,26 @@
+#video-box-message {
+  width: 100%;
+  height: 30vh;
+  max-height: 50%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  color: white;
+  background-color: #457b9d;
+}
+
+#video-box {
+  background-color: #457b9d;
+}
+
+.bg-error {
+  /* background-color: #dc3545 !important; */
+  background-color: #961b27 !important;
+  height: 20%;
+}
+
+.bg-clean {
+  background-color: #457b9d !important;
+  height: 20%;
+}

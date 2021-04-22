@@ -2,10 +2,13 @@ import React from "react";
 
 function ErrorVideoBox() {
   return (
-    <div className="alert alert-danger" role="alert">
-      <h2 className="alert-heading">Video not loaded yet!</h2>
-      <p>There's a problem with your video.</p>
-    </div>
+    <>
+      <h2 className="alert-heading">Oops! There was an error... :(</h2>
+      <p>
+        Make sure you entered a valid YouTube video URL or that you have the
+        permission to watch this video (i.e it's not a private video).
+      </p>
+    </>
   );
 }
 

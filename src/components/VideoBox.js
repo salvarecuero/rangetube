@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import YouTube from "@u-wave/react-youtube";
 import VideoBoxMessage from "./VideoBoxMessage";
+import "./styles/VideoBox.css";
 
 function VideoBox({
   videoID,
@@ -11,6 +12,7 @@ function VideoBox({
   setSearched,
   pageStatus,
   setPageStatus,
+  playerVirtualDOM,
   setPlayerVirtualDOM,
 }) {
   let [messageToShow, setMessageToShow] = useState();
@@ -31,7 +33,7 @@ function VideoBox({
 
   function handlePlaying(event) {
     handleSetVideoData(event.target);
-    document.getElementById("yt-iframe").classList.remove("d-none");
+    playerVirtualDOM.getPlayerState() === 2 && playerVirtualDOM.playVideo();
     !searched && setSearched(true);
     setPageStatus("succesfull");
   }
@@ -41,8 +43,11 @@ function VideoBox({
   }
 
   function handleError() {
-    document.getElementById("yt-iframe").classList.add("d-none");
-    videoID && setPageStatus("error") && !searched && setSearched(true);
+    videoID &&
+      setPageStatus("error") &&
+      playerVirtualDOM.clearVideo() &&
+      !searched &&
+      setSearched(true);
   }
 
   function handleSetVideoData(player) {
@@ -55,19 +60,23 @@ function VideoBox({
   }
 
   return (
-    <React.Fragment>
+    <>
       <VideoBoxMessage
         shouldShow={!!messageToShow}
         whatToShow={messageToShow}
       />
-      <div className="row">
-        <div className="col text-center">
+      <div
+        id="video-box"
+        className={`p-2 justify-content-center ${
+          pageStatus === "succesfull" || (pageStatus === "loading" && videoID)
+            ? "d-flex embed-responsive-item"
+            : "d-none"
+        }`}
+      >
+        <div className="w-50 embed-responsive embed-responsive-16by9">
           <YouTube
             id="yt-iframe"
-            className="d-none"
             video={videoID}
-            width="640"
-            height="390"
             autoplay={true}
             startSeconds={playRange.startSeconds}
             endSeconds={playRange.endSeconds ? playRange.endSeconds : undefined}
@@ -78,7 +87,7 @@ function VideoBox({
           />
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 }
 

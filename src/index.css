@@ -1,3 +1,22 @@
 body {
   height: 100vh !important;
 }
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+@media only screen and (max-height: 380px) {
+  #root {
+    overflow-y: initial !important;
+  }
+
+  body {
+    height: auto;
+  }
+
+  .Home {
+    height: auto !important;
+  }
+}

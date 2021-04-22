@@ -1,7 +1,10 @@
 .Home {
-  background-color: #b3bcbc;
+  background-color: #264653;
+  height: calc(100vh - 48px);
 }
 
 .Home__container {
-  background-color: #c9cfcf;
+  background-color: #335d6e;
+  height: 100%;
+  padding: 0 !important;
 }

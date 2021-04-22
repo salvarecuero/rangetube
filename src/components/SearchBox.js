@@ -1,18 +1,22 @@
 import React, { useState } from "react";
+import "./styles/SearchBox.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-function SearchBox({ setVideoURL, setPageStatus }) {
+function SearchBox({ setVideoURL, setPageStatus, playerVirtualDOM }) {
   let [searchValue, setSearchValue] = useState("");
 
   function handleSearchSubmit() {
-    if (searchValue) {
-      console.log("hmmm");
-      const newID = parseIdFromURL(searchValue);
+    const newID = parseIdFromURL(searchValue);
 
-      newID
-        ? setVideoURL(newID) && setPageStatus("loading")
-        : setPageStatus("error") &&
-          document.getElementById("yt-iframe").classList.add("d-none");
+    if (newID) {
+      playerVirtualDOM.stopVideo();
+      playerVirtualDOM.clearVideo();
+      setVideoURL(newID);
+      setPageStatus("loading");
     } else {
+      playerVirtualDOM.stopVideo();
+      playerVirtualDOM.clearVideo();
       setPageStatus("error");
     }
   }
@@ -30,20 +34,20 @@ function SearchBox({ setVideoURL, setPageStatus }) {
           <input
             onChange={(e) => setSearchValue(e.target.value)}
             type="text"
+            id="search-input"
             className="form-control"
             placeholder="Insert here your YouTube video URL..."
             aria-label="Insert here your YouTube video URL..."
-            aria-describedby="button-addon2"
             required
           />
           <div className="input-group-append">
             <button
-              onClick={handleSearchSubmit}
-              className="btn btn-outline-secondary"
+              id="search-button"
               type="button"
-              id="button-addon2"
+              className="btn"
+              onClick={searchValue ? handleSearchSubmit : null}
             >
-              Go
+              <FontAwesomeIcon icon={faArrowRight} />
             </button>
           </div>
         </div>

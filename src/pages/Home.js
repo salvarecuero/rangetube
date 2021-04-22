@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import Logo from "../components/Logo";
 import SearchBox from "../components/SearchBox";
 import VideoBox from "../components/VideoBox";
 import VideoControls from "../components/VideoControls";
@@ -36,15 +37,38 @@ function Home({ pageStatus, setPageStatus }) {
         startSeconds: 0,
         endSeconds: videoRelevantData.videoDuration,
       });
+      playerVirtualDOM.playVideo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoRelevantData]);
 
+  const pauseVideoWhenSpacebarUp = useCallback((e) => {
+    if (
+      e.key === " " &&
+      playerVirtualDOM &&
+      playerVirtualDOM.getPlayerState() === 1
+    ) {
+      console.log("I pressed");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keyup", pauseVideoWhenSpacebarUp);
+    return () =>
+      document.removeEventListener("keyup", pauseVideoWhenSpacebarUp);
+  }, [pauseVideoWhenSpacebarUp]);
+
   return (
     <>
-      <div className="Home h-100">
+      <div className="Home">
         <div className="container Home__container">
-          <SearchBox setVideoURL={setVideoURL} setPageStatus={setPageStatus} />
+          <Logo />
+          <SearchBox
+            setVideoURL={setVideoURL}
+            setPageStatus={setPageStatus}
+            playerVirtualDOM={playerVirtualDOM}
+          />
           <VideoBox
             videoID={videoURL}
             videoRelevantData={videoRelevantData}
