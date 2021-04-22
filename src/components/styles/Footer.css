@@ -5,3 +5,7 @@
 .Footer__text {
   color: #f7f3e9;
 }
+
+#github-link {
+  cursor: pointer;
+}

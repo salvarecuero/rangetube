@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import "./styles/SearchBox.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faAsterisk } from "@fortawesome/free-solid-svg-icons";
 
 function SearchBox({ setVideoURL, setPageStatus, playerVirtualDOM }) {
   let [searchValue, setSearchValue] = useState("");
+  const demoVideoURL = "https://www.youtube.com/watch?v=OPf0YbXqDm0";
 
   function handleSearchSubmit() {
     const newID = parseIdFromURL(searchValue);
@@ -33,6 +34,7 @@ function SearchBox({ setVideoURL, setPageStatus, playerVirtualDOM }) {
         <div className="input-group mb-3">
           <input
             onChange={(e) => setSearchValue(e.target.value)}
+            value={searchValue}
             type="text"
             id="search-input"
             className="form-control"
@@ -48,6 +50,15 @@ function SearchBox({ setVideoURL, setPageStatus, playerVirtualDOM }) {
               onClick={searchValue ? handleSearchSubmit : null}
             >
               <FontAwesomeIcon icon={faArrowRight} />
+            </button>
+            <button
+              id="demo-video-button"
+              type="button"
+              className="btn b-0"
+              title="Set a demo video for test purposes :)"
+              onClick={() => setSearchValue(demoVideoURL)}
+            >
+              <FontAwesomeIcon icon={faAsterisk} />
             </button>
           </div>
         </div>

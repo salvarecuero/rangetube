@@ -7,6 +7,7 @@ function Footer() {
       <div className="col Footer__text text-center">
         Made with <span className="text-danger">♥</span> by{" "}
         <a
+          id="github-link"
           className="text-white font-weight-bold"
           href="https://github.com/salvarecuero"
         >

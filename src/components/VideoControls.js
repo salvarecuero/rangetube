@@ -1,6 +1,6 @@
 import React from "react";
 import Slider from "rc-slider";
-import "rc-slider/assets/modifiedIndex.css";
+import "./styles/VideoControls.css";
 
 const { createSliderWithTooltip } = Slider;
 const Range = createSliderWithTooltip(Slider.Range);
@@ -31,7 +31,7 @@ function VideoControls({
 
   if (searched && pageStatus !== "error" && videoDuration) {
     return (
-      <div className="row justify-content-center pb-5">
+      <div className="row justify-content-center py-5">
         <div className="col text-center">
           <Range
             min={0}

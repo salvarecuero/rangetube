@@ -24,5 +24,15 @@
 #search-button {
   color: #6c757d;
   background-color: #fbfbf2;
-  border-color: #6c757d;
+  border-left-color: #6c757d;
+  border-top-color: #6c757d;
+  border-bottom-color: #6c757d;
+}
+
+#demo-video-button {
+  color: #6c757d;
+  background-color: #b0e8b1;
+  border-right-color: #6c757d;
+  border-top-color: #6c757d;
+  border-bottom-color: #6c757d;
 }
