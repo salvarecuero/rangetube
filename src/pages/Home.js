@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Logo from "../components/Logo";
 import SearchBox from "../components/SearchBox";
 import VideoBox from "../components/VideoBox";
@@ -6,25 +6,22 @@ import VideoControls from "../components/VideoControls";
 import "./styles/Home.css";
 
 function Home({ pageStatus, setPageStatus }) {
-  let [videoURL, setVideoURL] = useState("");
-
-  let [videoRelevantData, setVideoRelevantData] = useState({
+  const [videoID, setVideoID] = useState("");
+  const [videoRelevantData, setVideoRelevantData] = useState({
     info: "",
   });
-
-  let [playRange, setPlayRange] = useState({
+  const [playRange, setPlayRange] = useState({
     startSeconds: 0,
     endSeconds: undefined,
   });
+  const [alreadySearched, setAlreadySearched] = useState(false);
+  const [playerVirtualDOM, setPlayerVirtualDOM] = useState(null);
 
-  let [alreadySearched, setAlreadySearched] = useState(false);
-
-  let [playerVirtualDOM, setPlayerVirtualDOM] = useState(null);
-
+  // When the range changes we gotta reload the video with the new props, cause the player doesn't accept endSeconds-prop changes.
   useEffect(() => {
     playerVirtualDOM &&
       playerVirtualDOM.loadVideoById({
-        videoId: videoURL,
+        videoId: videoID,
         startSeconds: playRange.startSeconds,
         endSeconds: playRange.endSeconds,
       });
@@ -42,22 +39,22 @@ function Home({ pageStatus, setPageStatus }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoRelevantData]);
 
-  const pauseVideoWhenSpacebarUp = useCallback((e) => {
-    if (
-      e.key === " " &&
-      playerVirtualDOM &&
-      playerVirtualDOM.getPlayerState() === 1
-    ) {
-      console.log("I pressed");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Play/Pause when keydown is spacebar
+  const handleSpacebarPressed = useCallback(
+    (event) => {
+      if (playerVirtualDOM && event.key === " ") {
+        playerVirtualDOM.getPlayerState() !== 1
+          ? playerVirtualDOM.playVideo()
+          : playerVirtualDOM.pauseVideo();
+      }
+    },
+    [playerVirtualDOM]
+  );
 
   useEffect(() => {
-    document.addEventListener("keyup", pauseVideoWhenSpacebarUp);
-    return () =>
-      document.removeEventListener("keyup", pauseVideoWhenSpacebarUp);
-  }, [pauseVideoWhenSpacebarUp]);
+    playerVirtualDOM &&
+      document.addEventListener("keyup", handleSpacebarPressed);
+  }, [handleSpacebarPressed, playerVirtualDOM]);
 
   return (
     <>
@@ -65,12 +62,14 @@ function Home({ pageStatus, setPageStatus }) {
         <div className="container Home__container">
           <Logo />
           <SearchBox
-            setVideoURL={setVideoURL}
+            videoID={videoID}
+            setVideoID={setVideoID}
+            pageStatus={pageStatus}
             setPageStatus={setPageStatus}
             playerVirtualDOM={playerVirtualDOM}
           />
           <VideoBox
-            videoID={videoURL}
+            videoID={videoID}
             videoRelevantData={videoRelevantData}
             setVideoRelevantData={setVideoRelevantData}
             playRange={playRange}

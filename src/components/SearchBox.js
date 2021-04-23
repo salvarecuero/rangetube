@@ -3,19 +3,26 @@ import "./styles/SearchBox.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faAsterisk } from "@fortawesome/free-solid-svg-icons";
 
-function SearchBox({ setVideoURL, setPageStatus, playerVirtualDOM }) {
-  let [searchValue, setSearchValue] = useState("");
+function SearchBox({
+  videoID,
+  setVideoID,
+  pageStatus,
+  setPageStatus,
+  playerVirtualDOM,
+}) {
+  const [searchValue, setSearchValue] = useState("");
   const demoVideoURL = "https://www.youtube.com/watch?v=OPf0YbXqDm0";
 
   function handleSearchSubmit() {
     const newID = parseIdFromURL(searchValue);
 
-    if (newID) {
+    if (newID && (newID !== videoID || pageStatus === "error")) {
       playerVirtualDOM.stopVideo();
       playerVirtualDOM.clearVideo();
-      setVideoURL(newID);
+      setVideoID(newID);
       setPageStatus("loading");
-    } else {
+    } else if (!newID) {
+      setVideoID(" ");
       playerVirtualDOM.stopVideo();
       playerVirtualDOM.clearVideo();
       setPageStatus("error");
@@ -23,8 +30,8 @@ function SearchBox({ setVideoURL, setPageStatus, playerVirtualDOM }) {
   }
 
   function parseIdFromURL(url) {
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    var match = url.match(regExp);
+    let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    let match = url.match(regExp);
     return match && match[7].length === 11 ? match[7] : false;
   }
 

@@ -4,7 +4,7 @@ import Home from "../pages/Home";
 import Footer from "./Footer";
 
 function App() {
-  let [pageStatus, setPageStatus] = useState();
+  const [pageStatus, setPageStatus] = useState();
 
   return (
     <>

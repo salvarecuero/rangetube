@@ -3,6 +3,7 @@ import React from "react";
 function StatusBar({ state }) {
   let statusBarClasses = undefined;
 
+  // Probably should make it a Switch statement
   if (state === "succesfull") {
     statusBarClasses = "progress-bar bg-success";
   } else if (state === "loading") {

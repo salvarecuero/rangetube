@@ -3,6 +3,9 @@ import YouTube from "@u-wave/react-youtube";
 import VideoBoxMessage from "./VideoBoxMessage";
 import "./styles/VideoBox.css";
 
+// YT Iframe documentation: https://developers.google.com/youtube/iframe_api_reference
+// React-Youtube: https://github.com/u-wave/react-youtube/tree/default/example
+
 function VideoBox({
   videoID,
   videoRelevantData,
@@ -15,7 +18,7 @@ function VideoBox({
   playerVirtualDOM,
   setPlayerVirtualDOM,
 }) {
-  let [messageToShow, setMessageToShow] = useState();
+  const [messageToShow, setMessageToShow] = useState();
 
   useEffect(() => {
     if (pageStatus && pageStatus !== "error") {
@@ -28,18 +31,18 @@ function VideoBox({
   }, [pageStatus]);
 
   function handleReady(event) {
-    setPlayerVirtualDOM(event.target);
+    setPlayerVirtualDOM(event.target); // When the player is loaded (and ready) we save it in a state so we can use methods conveniently
   }
 
   function handlePlaying(event) {
     handleSetVideoData(event.target);
-    playerVirtualDOM.getPlayerState() === 2 && playerVirtualDOM.playVideo();
+    playerVirtualDOM.getPlayerState() === 2 && playerVirtualDOM.playVideo(); // PlayerState === 2 it means the video is paused
     !searched && setSearched(true);
     setPageStatus("succesfull");
   }
 
   function handleEnding(event) {
-    event.data === 0 && event.target.seekTo(playRange.startSeconds);
+    event.data === 0 && event.target.seekTo(playRange.startSeconds); // event.data === 0 is the stateChange triggered when the video ends
   }
 
   function handleError() {
