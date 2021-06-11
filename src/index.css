@@ -7,7 +7,7 @@ body {
   overflow: hidden;
 }
 
-@media only screen and (max-height: 380px) {
+@media only screen and (max-height: 640px) {
   #root {
     overflow-y: initial !important;
   }
