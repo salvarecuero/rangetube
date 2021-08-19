@@ -1,6 +1,7 @@
 import React from "react";
 import CleanVideoBox from "./CleanVideoBox";
 import ErrorVideoBox from "./ErrorVideoBox";
+import "./styles/VideoBoxMessage.css";
 
 function VideoBoxMessage({ shouldShow, whatToShow }) {
   if (shouldShow) {

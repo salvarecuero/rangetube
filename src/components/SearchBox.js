@@ -30,14 +30,15 @@ function SearchBox({
   }
 
   function parseIdFromURL(url) {
-    let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    let regExp =
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     let match = url.match(regExp);
     return match && match[7].length === 11 ? match[7] : false;
   }
 
   return (
     <div className="row justify-content-center p-2">
-      <div className="col-6">
+      <div className="col-md-6">
         <div className="input-group mb-3">
           <input
             onChange={(e) => setSearchValue(e.target.value)}

@@ -15,7 +15,9 @@ body {
   body {
     height: auto;
   }
+}
 
+@media only screen and (max-height: 320px) {
   .Home {
     height: auto !important;
   }

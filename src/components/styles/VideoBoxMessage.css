@@ -9,3 +9,12 @@
   color: #fbfbf2;
   background-color: #457b9d;
 }
+
+@media only screen and (max-height: 320px) {
+  #video-box-message {
+    height: auto !important;
+    max-height: auto !important;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+  }
+}
