@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Slider from "rc-slider";
+import useDebounce from "../hooks/useDebounce";
 import "./styles/VideoControls.css";
 
 const { createSliderWithTooltip } = Slider;
@@ -14,19 +15,33 @@ function VideoControls({
   playRange,
   setPlayRange,
 }) {
-  function handlePlayerVarsChange(values) {
-    setPageStatus("loading");
-    setPlayRange({
-      startSeconds: values[0],
-      endSeconds: values[1],
-    });
-  }
+  const [currentRange, setCurrentRange] = useState([0, videoDuration]);
+  const debouncedRange = useDebounce(currentRange, 300);
+
+  const handlePlayerVarsChange = useCallback(
+    (values) => {
+      setPageStatus("loading");
+      setPlayRange({
+        startSeconds: values[0],
+        endSeconds: values[1],
+      });
+    },
+    [setPageStatus, setPlayRange]
+  );
+
+  useEffect(
+    () => handlePlayerVarsChange(currentRange),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [debouncedRange, handlePlayerVarsChange, setPageStatus, setPlayRange]
+  );
 
   function handleChangingValues(values) {
     setPageStatus("loading");
     playRange.startSeconds !== values[0]
       ? player.seekTo(values[0], false)
       : player.seekTo(values[1], false);
+
+    setCurrentRange(values);
   }
 
   if (searched && pageStatus !== "error" && videoDuration) {
@@ -38,8 +53,8 @@ function VideoControls({
             max={videoDuration}
             step={1}
             defaultValue={[0, videoDuration]}
+            value={currentRange}
             onChange={(values) => handleChangingValues(values)}
-            onAfterChange={(values) => handlePlayerVarsChange(values)}
             tipFormatter={(value) => {
               return new Date(1000 * value).toISOString().substr(11, 8);
             }}
