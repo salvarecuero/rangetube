@@ -17,6 +17,19 @@ describe("RangeSlider", () => {
     expect(start).toHaveAttribute("aria-valuemax", "90");
   });
 
+  it("marks each thumb with horizontal orientation and groups them", () => {
+    render(<RangeSlider min={0} max={100} value={[10, 90]} onChange={() => {}} />);
+    expect(screen.getByRole("group", { name: /loop range/i })).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: /loop start/i })).toHaveAttribute(
+      "aria-orientation",
+      "horizontal",
+    );
+    expect(screen.getByRole("slider", { name: /loop end/i })).toHaveAttribute(
+      "aria-orientation",
+      "horizontal",
+    );
+  });
+
   it("ArrowRight on the start thumb increases start by one step", () => {
     const onChange = vi.fn();
     render(<RangeSlider min={0} max={100} value={[10, 90]} onChange={onChange} />);

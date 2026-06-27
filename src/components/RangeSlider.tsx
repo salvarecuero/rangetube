@@ -64,28 +64,34 @@ export function RangeSlider({
   const text = (v: number): string => (formatValueText ? formatValueText(v) : String(v));
 
   return (
-    <div className="relative flex w-full items-center gap-4 py-4">
+    <div
+      role="group"
+      aria-label="Loop range"
+      className="relative flex w-full items-center gap-4 py-4"
+    >
       <span
         role="slider"
         tabIndex={0}
         aria-label="Loop start"
+        aria-orientation="horizontal"
         aria-valuemin={min}
         aria-valuemax={end}
         aria-valuenow={start}
         aria-valuetext={text(start)}
         onKeyDown={onStartKey}
-        className="inline-block h-6 w-6 cursor-pointer rounded-full bg-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="inline-block h-6 w-6 cursor-default rounded-full bg-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       />
       <span
         role="slider"
         tabIndex={0}
         aria-label="Loop end"
+        aria-orientation="horizontal"
         aria-valuemin={start}
         aria-valuemax={max}
         aria-valuenow={end}
         aria-valuetext={text(end)}
         onKeyDown={onEndKey}
-        className="inline-block h-6 w-6 cursor-pointer rounded-full bg-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="inline-block h-6 w-6 cursor-default rounded-full bg-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       />
     </div>
   );
