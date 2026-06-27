@@ -7,6 +7,9 @@
 /dist/
 /.astro/
 
+# Wrangler local cache
+/.wrangler/
+
 # testing
 /coverage
 
