@@ -49,7 +49,7 @@ export function Looper() {
     };
   }, []);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const id = parseVideoId(urlInput);
     if (!id) {
