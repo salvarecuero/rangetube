@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { parseVideoId } from "../lib/youtube/parseVideoId";
 import { createPlayer } from "../lib/youtube/iframeApi";
 import { YouTubeSource } from "../lib/player/youtubeSource";
@@ -49,7 +49,7 @@ export function Looper() {
     };
   }, []);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const id = parseVideoId(urlInput);
     if (!id) {
