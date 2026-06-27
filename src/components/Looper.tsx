@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { parseVideoId } from "../lib/youtube/parseVideoId";
 import { createPlayer } from "../lib/youtube/iframeApi";
 import { YouTubeSource } from "../lib/player/youtubeSource";
@@ -49,8 +49,7 @@ export function Looper() {
     };
   }, []);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleSubmit() {
     const id = parseVideoId(urlInput);
     if (!id) {
       setError("Please enter a valid YouTube video URL or ID.");
@@ -87,7 +86,13 @@ export function Looper() {
   return (
     <section className="mx-auto flex max-w-3xl flex-col gap-6 p-4">
       {phase === "input" && (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="flex flex-col gap-2"
+        >
           <label htmlFor="yt-url" className="font-medium">
             YouTube video URL
           </label>
