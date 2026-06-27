@@ -1,0 +1,27 @@
+---
+import "../styles/global.css";
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = "RangeTube — Loop the exact part of any YouTube video",
+  description = "Loop a section of any YouTube video, endlessly. No ads, no signup — just the clip and you.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    <link rel="preconnect" href="https://i.ytimg.com" />
+  </head>
+  <body class="min-h-screen bg-white text-neutral-900">
+    <slot />
+  </body>
+</html>

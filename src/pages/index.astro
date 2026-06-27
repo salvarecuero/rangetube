@@ -1,1 +1,11 @@
-<h1>RangeTube v2</h1>
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Looper } from "../components/Looper";
+---
+
+<BaseLayout>
+  <main>
+    <h1 class="p-4 text-2xl font-bold">RangeTube</h1>
+    <Looper client:idle />
+  </main>
+</BaseLayout>
