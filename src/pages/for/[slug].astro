@@ -2,10 +2,15 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { Looper } from "../../components/Looper";
 import { USE_CASES } from "../../content/useCases";
+import type { UseCase } from "../../content/useCases";
 import { faqPage, breadcrumbList } from "../../lib/seo/schema";
 
 export function getStaticPaths() {
   return USE_CASES.map((uc) => ({ params: { slug: uc.slug }, props: { uc } }));
+}
+
+interface Props {
+  uc: UseCase;
 }
 
 const { uc } = Astro.props;
@@ -31,22 +36,22 @@ const jsonLd = [
       <Looper client:idle />
     </div>
 
-    <section class="mt-12" aria-labelledby="why">
-      <h2 id="why" class="text-xl font-semibold text-ink">Why RangeTube for {uc.audience.toLowerCase()}</h2>
+    <section class="mt-12" aria-labelledby="uc-why">
+      <h2 id="uc-why" class="text-xl font-semibold text-ink">Why RangeTube for {uc.audience.toLowerCase()}</h2>
       <ul class="mt-4 list-disc space-y-2 pl-6 text-muted">
         {uc.whyBullets.map((b) => <li>{b}</li>)}
       </ul>
     </section>
 
-    <section class="mt-12" aria-labelledby="how">
-      <h2 id="how" class="text-xl font-semibold text-ink">How to loop a section for {uc.audience.toLowerCase()}</h2>
+    <section class="mt-12" aria-labelledby="uc-how">
+      <h2 id="uc-how" class="text-xl font-semibold text-ink">How to loop a section for {uc.audience.toLowerCase()}</h2>
       <ol class="mt-4 list-decimal space-y-2 pl-6 text-muted">
         {uc.steps.map((s) => <li>{s}</li>)}
       </ol>
     </section>
 
-    <section class="mt-12" aria-labelledby="faq">
-      <h2 id="faq" class="text-xl font-semibold text-ink">Frequently asked questions</h2>
+    <section class="mt-12" aria-labelledby="uc-faq">
+      <h2 id="uc-faq" class="text-xl font-semibold text-ink">Frequently asked questions</h2>
       <dl class="mt-4 space-y-6">
         {
           uc.faq.map((f) => (
@@ -59,18 +64,18 @@ const jsonLd = [
       </dl>
     </section>
 
-    <section class="mt-12 border-t border-line pt-6" aria-labelledby="also">
-      <h2 id="also" class="text-base font-semibold text-ink">Also made for</h2>
+    <section class="mt-12 border-t border-line pt-6" aria-labelledby="uc-also">
+      <h2 id="uc-also" class="text-base font-semibold text-ink">Also made for</h2>
       <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-muted">
         {others.map((o) => (
           <li>
-            <a class="text-brand-700 underline" href={`/for/${o.slug}`}>
+            <a class="text-brand-700 underline hover:text-brand-900 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600" href={`/for/${o.slug}`}>
               {o.audience}
             </a>
           </li>
         ))}
         <li>
-          <a class="text-brand-700 underline" href="/">Open the full looper</a>
+          <a class="text-brand-700 underline hover:text-brand-900 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600" href="/">Open the full looper</a>
         </li>
       </ul>
     </section>
