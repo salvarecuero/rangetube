@@ -1,3 +1,5 @@
+import type { HowToSlug } from "./howTos";
+
 export interface UseCaseFaq {
   q: string;
   a: string;
@@ -22,6 +24,8 @@ export interface UseCase {
   steps: string[];
   /** 3-5 FAQ entries → rendered on-page AND emitted as FAQPage JSON-LD. */
   faq: UseCaseFaq[];
+  /** How-to guides this audience page links to. Every slug must exist in HOW_TOS. */
+  relatedHowTos: HowToSlug[];
 }
 
 export const USE_CASES: UseCase[] = [
@@ -63,6 +67,7 @@ export const USE_CASES: UseCase[] = [
         a: "Completely free, with no account and no paywall. Some other loopers charge to save loops; RangeTube doesn't.",
       },
     ],
+    relatedHowTos: ["ab-loop-youtube", "slow-down-a-youtube-video"],
   },
   {
     slug: "language-learners",
@@ -102,6 +107,7 @@ export const USE_CASES: UseCase[] = [
         a: "It does. Looping a line of a song is a fun, low-pressure way to pick up vocabulary and pronunciation.",
       },
     ],
+    relatedHowTos: ["slow-down-a-youtube-video", "ab-loop-youtube"],
   },
   {
     slug: "dancers",
@@ -141,6 +147,7 @@ export const USE_CASES: UseCase[] = [
         a: "Yes, completely free with no account required.",
       },
     ],
+    relatedHowTos: ["slow-down-a-youtube-video", "loop-youtube-on-mobile"],
   },
   {
     slug: "students",
@@ -180,5 +187,6 @@ export const USE_CASES: UseCase[] = [
         a: "Yes, it's free with no sign-up and no ads injected by us.",
       },
     ],
+    relatedHowTos: ["loop-a-section-of-a-youtube-video", "loop-youtube-on-mobile"],
   },
 ];
