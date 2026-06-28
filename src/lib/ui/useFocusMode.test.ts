@@ -14,9 +14,13 @@ describe("useFocusMode", () => {
 
   it("enters on 'f' and exits on Escape", () => {
     const { result } = renderHook(() => useFocusMode());
-    act(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "f" })));
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "f" }));
+    });
     expect(result.current.focus).toBe(true);
-    act(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })));
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    });
     expect(result.current.focus).toBe(false);
   });
 
@@ -31,7 +35,9 @@ describe("useFocusMode", () => {
     document.body.appendChild(input);
     input.focus();
     const { result } = renderHook(() => useFocusMode());
-    act(() => input.dispatchEvent(new KeyboardEvent("keydown", { key: "f", bubbles: true })));
+    act(() => {
+      input.dispatchEvent(new KeyboardEvent("keydown", { key: "f", bubbles: true }));
+    });
     expect(result.current.focus).toBe(false);
     input.remove();
   });
