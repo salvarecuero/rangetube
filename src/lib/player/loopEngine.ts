@@ -25,6 +25,7 @@ const defaultCancel = (id: number): void => cancelAnimationFrame(id);
 export class LoopEngine {
   private range: LoopRange | null = null;
   private rafId: number | null = null;
+  private enabled = true;
   private readonly getCurrentTime: () => number;
   private readonly seekTo: (seconds: number) => void;
   private readonly schedule: (cb: () => void) => number;
@@ -41,9 +42,14 @@ export class LoopEngine {
     this.range = range;
   }
 
+  /** Enable/disable looping. When disabled, playback runs past the range end. */
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
   /** One evaluation of the loop condition. Pure given getCurrentTime/seekTo. */
   tick(): void {
-    if (!this.range) return;
+    if (!this.enabled || !this.range) return;
     const EPSILON = 0.05; // seconds; absorbs polling/float drift at the loop end
     const t = this.getCurrentTime();
     if (t >= this.range.end - EPSILON || t < this.range.start) {
