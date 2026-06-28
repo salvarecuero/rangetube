@@ -1,6 +1,8 @@
 // Announces readiness to the embedding portfolio and answers its hello/ack.
 // Protocol version 1; must match the portfolio's embed controller.
-const PARENTS = ["https://salvarecuero.dev", "http://localhost:4321"];
+import { PORTFOLIO_ORIGINS } from "./origins";
+
+const PARENTS: readonly string[] = PORTFOLIO_ORIGINS;
 const V = 1;
 
 interface EmbedMessage {
