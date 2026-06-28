@@ -109,4 +109,15 @@ describe("ControlDeck", () => {
       "true",
     );
   });
+
+  it("shows the speed control only when the source supports speed", () => {
+    const onRate = vi.fn();
+    const { rerender } = render(<ControlDeck {...props({ canSetSpeed: false, rate: 1, onRate })} />);
+    expect(screen.queryByRole("group", { name: /playback speed/i })).not.toBeInTheDocument();
+
+    rerender(<ControlDeck {...props({ canSetSpeed: true, rate: 1, onRate })} />);
+    expect(screen.getByRole("group", { name: /playback speed/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /1\.5/ }));
+    expect(onRate).toHaveBeenCalledWith(1.5);
+  });
 });
