@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { USE_CASES } from "./useCases";
 import { USE_CASE_LINKS } from "../lib/site";
+import { HOW_TOS } from "./howTos";
 
 describe("USE_CASES content data", () => {
   it("has exactly the 4 expected, unique slugs", () => {
@@ -42,5 +43,15 @@ describe("USE_CASES content data", () => {
   it("USE_CASE_LINKS covers exactly the USE_CASES slugs", () => {
     const linkSlugs = USE_CASE_LINKS.map((l) => l.href.replace("/for/", ""));
     expect(linkSlugs).toEqual(USE_CASES.map((u) => u.slug));
+  });
+
+  it("links each use-case to at least one existing how-to guide", () => {
+    const howToSlugs = new Set(HOW_TOS.map((h) => h.slug));
+    for (const u of USE_CASES) {
+      expect(u.relatedHowTos.length).toBeGreaterThan(0);
+      for (const slug of u.relatedHowTos) {
+        expect(howToSlugs.has(slug)).toBe(true);
+      }
+    }
   });
 });
