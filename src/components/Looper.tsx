@@ -33,6 +33,7 @@ export function Looper() {
   const [source, setSource] = useState<YouTubeSource | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [timeMode, setTimeMode] = useState<TimeMode>("video");
+  const [looping, setLooping] = useState(true);
 
   const playerHostRef = useRef<HTMLDivElement>(null);
   const keepWatchingRef = useRef<HTMLButtonElement>(null);
@@ -194,6 +195,7 @@ export function Looper() {
       seekTo: (s) => nextSource.seekTo(s),
     });
     engine.setRange({ start: 0, end: dur });
+    engine.setEnabled(looping);
     engine.start();
     engineRef.current = engine;
     // Activation is user-initiated (the facade click), so kick off playback now —
@@ -248,6 +250,13 @@ export function Looper() {
   }
   function restartLoop() {
     sourceRef.current?.seekTo(range[0]);
+  }
+  function toggleLoop() {
+    setLooping((on) => {
+      const next = !on;
+      engineRef.current?.setEnabled(next);
+      return next;
+    });
   }
 
   const fmt = (s: number) => formatTime(s, true);
@@ -370,8 +379,10 @@ export function Looper() {
                   onFocus={toggle}
                   onToggleTimeMode={() => setTimeMode((m) => (m === "video" ? "loop" : "video"))}
                   timeMode={timeMode}
+                  looping={looping}
+                  onToggleLoop={toggleLoop}
+                  focusActive={focus}
                   format={fmt}
-                  showFocusButton={!focus}
                   variant={focus ? "dark" : "light"}
                 />
               )}

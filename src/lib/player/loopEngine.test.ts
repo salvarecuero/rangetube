@@ -50,6 +50,21 @@ describe("LoopEngine.tick", () => {
     engine.tick();
     expect(seekTo).toHaveBeenCalledWith(10);
   });
+  it("does not re-seek at the end when looping is disabled", () => {
+    const { engine, seekTo } = setup(20);
+    engine.setRange({ start: 10, end: 20 });
+    engine.setEnabled(false);
+    engine.tick();
+    expect(seekTo).not.toHaveBeenCalled();
+  });
+  it("resumes looping when re-enabled", () => {
+    const { engine, seekTo } = setup(20);
+    engine.setRange({ start: 10, end: 20 });
+    engine.setEnabled(false);
+    engine.setEnabled(true);
+    engine.tick();
+    expect(seekTo).toHaveBeenCalledWith(10);
+  });
 });
 
 describe("LoopEngine.start/stop", () => {

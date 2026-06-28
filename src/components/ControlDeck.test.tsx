@@ -19,6 +19,9 @@ function props(over: Partial<React.ComponentProps<typeof ControlDeck>> = {}) {
     onRestart: () => {},
     onFocus: () => {},
     onToggleTimeMode: () => {},
+    onToggleLoop: () => {},
+    looping: true,
+    focusActive: false,
     timeMode: "video" as const,
     format: (s: number) => `${s}s`,
     ...over,
@@ -76,5 +79,34 @@ describe("ControlDeck", () => {
     fireEvent.change(b, { target: { value: "60" } });
     fireEvent.keyDown(b, { key: "Enter" });
     expect(onCommit).toHaveBeenCalledWith([10, 60]);
+  });
+
+  it("exposes the loop button as a pressed toggle when looping", () => {
+    render(<ControlDeck {...props({ looping: true })} />);
+    const loop = screen.getByRole("button", { name: /toggle loop/i });
+    expect(loop).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("shows the loop toggle as not pressed when looping is off", () => {
+    render(<ControlDeck {...props({ looping: false })} />);
+    expect(screen.getByRole("button", { name: /toggle loop/i })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+  });
+
+  it("toggles looping when the loop button is clicked", () => {
+    const onToggleLoop = vi.fn();
+    render(<ControlDeck {...props({ onToggleLoop })} />);
+    fireEvent.click(screen.getByRole("button", { name: /toggle loop/i }));
+    expect(onToggleLoop).toHaveBeenCalled();
+  });
+
+  it("reflects focus-mode state on the focus toggle", () => {
+    render(<ControlDeck {...props({ focusActive: true })} />);
+    expect(screen.getByRole("button", { name: /focus mode/i })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 });

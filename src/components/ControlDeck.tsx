@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import { Play, Pause, RotateCcw, Repeat, Maximize2, ArrowRightLeft } from "lucide-react";
+import { Play, Pause, RotateCcw, Repeat, Focus, ArrowRightLeft } from "lucide-react";
 import { RangeSlider } from "./RangeSlider";
 import { TimeField } from "./TimeField";
 import type { TimeMode } from "../lib/ui/playhead";
@@ -25,6 +25,11 @@ export interface ControlDeckProps {
   /** Toggle the current-time readout between "in video" and "in loop". */
   onToggleTimeMode: () => void;
   timeMode: TimeMode;
+  /** Whether the A→B loop is active (repeats) vs. plays through. */
+  looping: boolean;
+  onToggleLoop: () => void;
+  /** Whether focus mode is currently on (reflected on the focus toggle). */
+  focusActive?: boolean;
   format: (seconds: number) => string;
   showFocusButton?: boolean;
   variant?: "light" | "dark";
@@ -46,6 +51,9 @@ export function ControlDeck({
   onFocus,
   onToggleTimeMode,
   timeMode,
+  looping,
+  onToggleLoop,
+  focusActive = false,
   format,
   showFocusButton = true,
   variant = "light",
@@ -56,11 +64,15 @@ export function ControlDeck({
   const modeLabel = timeMode === "loop" ? "in loop" : "in video";
   const initialNumerator = timeMode === "loop" ? format(0) : format(range[0]);
 
-  const iconBtn = `grid h-10 w-10 place-items-center rounded-[14px] border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-    dark
-      ? "border-white/12 bg-white/[0.06] text-brand-300 hover:border-brand-400"
-      : "border-line bg-white text-brand-700 hover:border-brand-500"
-  }`;
+  // Cluster button styling; `active` is the pressed-toggle look (loop on / focus on).
+  const clusterBtn = (active: boolean) => {
+    const base =
+      "grid h-10 w-10 place-items-center rounded-[14px] border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500";
+    if (active) {
+      return `${base} ${dark ? "border-brand-400/50 bg-brand-500/20 text-brand-300" : "border-brand-500 bg-brand-50 text-brand-700"}`;
+    }
+    return `${base} ${dark ? "border-white/12 bg-white/[0.06] text-brand-300 hover:border-brand-400" : "border-line bg-white text-brand-700 hover:border-brand-500"}`;
+  };
 
   return (
     <div
@@ -156,22 +168,40 @@ export function ControlDeck({
           </div>
         </div>
 
-        {/* Restart · loop indicator · focus */}
+        {/* Restart · loop toggle · focus toggle */}
         <div className="order-3 flex shrink-0 items-center gap-2">
-          <button type="button" onClick={onRestart} aria-label="Restart loop" className={iconBtn}>
+          <button
+            type="button"
+            onClick={onRestart}
+            aria-label="Restart loop"
+            className={clusterBtn(false)}
+          >
             <RotateCcw className="h-5 w-5" aria-hidden="true" />
           </button>
-          <span
-            role="img"
-            aria-label="Loop on"
-            title="Loop on"
-            className={`${iconBtn} cursor-default ${dark ? "text-brand-300" : "text-brand-600"}`}
+          <button
+            type="button"
+            onClick={onToggleLoop}
+            aria-label="Toggle loop"
+            aria-pressed={looping}
+            title={looping ? "Loop on — repeats A→B" : "Loop off — plays past B"}
+            className={clusterBtn(looping)}
           >
             <Repeat className="h-5 w-5" aria-hidden="true" />
-          </span>
+          </button>
           {showFocusButton && (
-            <button type="button" onClick={onFocus} aria-label="Focus mode" className={iconBtn}>
-              <Maximize2 className="h-5 w-5" aria-hidden="true" />
+            <button
+              type="button"
+              onClick={onFocus}
+              aria-label="Focus mode"
+              aria-pressed={focusActive}
+              title={
+                focusActive
+                  ? "Exit focus mode (Esc)"
+                  : "Focus mode — hide everything but the player"
+              }
+              className={clusterBtn(focusActive)}
+            >
+              <Focus className="h-5 w-5" aria-hidden="true" />
             </button>
           )}
         </div>
