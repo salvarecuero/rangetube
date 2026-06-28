@@ -8,7 +8,7 @@ export interface HeroInputProps {
 
 export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: HeroInputProps) {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 text-center">
+    <div className="mx-auto w-full max-w-3xl text-center">
       <h2 className="font-display mx-auto mb-4 max-w-[18ch] text-4xl font-bold leading-[1.06] tracking-tight @md:text-5xl">
         Loop the{" "}
         <span className="bg-[image:var(--rt-grad)] bg-clip-text text-transparent">exact part</span>{" "}
