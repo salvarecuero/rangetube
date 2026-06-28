@@ -1,11 +1,15 @@
 ---
-import { FOOTER_LINKS, NON_AFFILIATION, CONTACT_EMAIL } from "../lib/site";
+import { FOOTER_LINKS, USE_CASE_LINKS, NON_AFFILIATION, CONTACT_EMAIL } from "../lib/site";
 ---
 
 <footer class="mt-auto border-t border-black/5 px-4 py-6 text-center text-xs text-muted">
   <nav class="mb-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
     {FOOTER_LINKS.map((l) => <a class="hover:underline" href={l.href}>{l.label}</a>)}
     <a class="hover:underline" href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
+  </nav>
+  <nav class="mb-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+    <span class="text-muted/80">Made for:</span>
+    {USE_CASE_LINKS.map((l) => <a class="hover:underline" href={l.href}>{l.label}</a>)}
   </nav>
   <p class="mx-auto max-w-2xl">{NON_AFFILIATION}</p>
 </footer>
