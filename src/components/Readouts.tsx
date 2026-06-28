@@ -7,10 +7,10 @@ export interface ReadoutsProps {
 
 export function Readouts({ start, end, format, variant = "light" }: ReadoutsProps) {
   const dark = variant === "dark";
-  const cells: Array<{ k: string; v: string; accent?: boolean }> = [
-    { k: "Start", v: format(start) },
+  const cells: Array<{ k: string; v: string; accent?: boolean; dot?: string }> = [
+    { k: "Start (A)", v: format(start), dot: "var(--color-brand-600)" },
     { k: "Loop length", v: format(Math.max(0, end - start)), accent: true },
-    { k: "End", v: format(end) },
+    { k: "End (B)", v: format(end), dot: "var(--color-coral-600)" },
   ];
   return (
     <div className="flex flex-col gap-2.5 @sm:flex-row">
@@ -28,8 +28,11 @@ export function Readouts({ start, end, format, variant = "light" }: ReadoutsProp
           }`}
         >
           <div
-            className={`text-[10.5px] font-semibold uppercase tracking-wider ${dark ? "text-focus-muted" : "text-muted"}`}
+            className={`flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider ${dark ? "text-focus-muted" : "text-muted"}`}
           >
+            {c.dot && (
+              <span className="inline-block h-2 w-2 rounded-full" style={{ background: c.dot }} />
+            )}
             {c.k}
           </div>
           <div

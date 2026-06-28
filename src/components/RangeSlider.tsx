@@ -165,7 +165,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function
           onKeyDown={onEndKey}
           onPointerDown={thumbDown("end")}
           style={{ left: pct(end) }}
-          className="absolute top-1/2 z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-[3px] border-brand-600 bg-white shadow-md after:absolute after:-inset-3 after:content-[''] focus-visible:outline-none focus-visible:shadow-[0_0_0_4px_var(--color-brand-500)]"
+          className="absolute top-1/2 z-10 h-6 w-6 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-[3px] border-coral-600 bg-white shadow-md after:absolute after:-inset-3 after:content-[''] focus-visible:outline-none focus-visible:shadow-[0_0_0_4px_var(--color-coral-600)]"
         />
       </div>
     </div>

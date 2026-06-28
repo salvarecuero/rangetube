@@ -9,16 +9,14 @@ export interface HeroInputProps {
 export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: HeroInputProps) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 text-center">
-      <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-line bg-white/70 px-3.5 py-1.5 text-xs font-semibold text-brand-700">
-        No ads · no signup · just the clip and you
-      </span>
-      <h2 className="mx-auto mb-4 max-w-[14ch] text-4xl font-extrabold leading-[1.05] tracking-tight @md:text-5xl">
+      <h2 className="font-display mx-auto mb-4 max-w-[18ch] text-4xl font-bold leading-[1.06] tracking-tight @md:text-5xl">
         Loop the{" "}
         <span className="bg-[image:var(--rt-grad)] bg-clip-text text-transparent">exact part</span>{" "}
-        of any video. Endlessly.
+        of any YouTube video
       </h2>
       <p className="mx-auto mb-7 max-w-[46ch] text-base text-muted">
-        Paste a YouTube link, drag two handles to pick a section, and it repeats forever.
+        Pick a start and end, and it repeats — endlessly. Built for musicians, language learners and
+        dancers.
       </p>
       <form
         onSubmit={(e) => {

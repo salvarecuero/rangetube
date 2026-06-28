@@ -8,6 +8,7 @@ import { formatTime } from "../lib/ui/formatTime";
 import { useFocusMode, isTypingTarget } from "../lib/ui/useFocusMode";
 import { usePlayhead } from "../lib/ui/usePlayhead";
 import { HeroInput } from "./HeroInput";
+import { Logo } from "./Logo";
 import { PlayerStage, type StageError } from "./PlayerStage";
 import { YouTubeFacade } from "./YouTubeFacade";
 import { ControlDeck } from "./ControlDeck";
@@ -160,6 +161,12 @@ export function Looper() {
       </div>
 
       <section className="mx-auto flex max-w-3xl flex-col gap-6 p-4 transition-all duration-500 group-data-[focus=true]/shell:min-h-screen group-data-[focus=true]/shell:max-w-5xl group-data-[focus=true]/shell:justify-center">
+        {!focus && (
+          <header className="flex items-center justify-between">
+            <Logo />
+          </header>
+        )}
+
         {phase === "input" && (
           <HeroInput
             value={urlInput}
