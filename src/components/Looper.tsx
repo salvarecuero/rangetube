@@ -15,6 +15,7 @@ import { Logo } from "./Logo";
 import { PlayerStage, type StageError } from "./PlayerStage";
 import { YouTubeFacade } from "./YouTubeFacade";
 import { ControlDeck } from "./ControlDeck";
+import { SavedLoops } from "./SavedLoops";
 import { Compliance } from "./Compliance";
 import { encodeLoopParams, decodeLoopParams } from "../lib/share/loopParams";
 import type { LoopState } from "../lib/share/loopState";
@@ -333,6 +334,16 @@ export function Looper() {
     syncUrl(rangeRef.current, next);
   }
 
+  function applySavedLoop(state: LoopState) {
+    const next: [number, number] = [state.start, state.end];
+    setRange(next);
+    engineRef.current?.setRange({ start: next[0], end: next[1] });
+    setRate(state.rate);
+    sourceRef.current?.setPlaybackRate(state.rate);
+    sourceRef.current?.seekTo(state.start);
+    syncUrl(next, state.rate);
+  }
+
   function syncUrl(nextRange: [number, number], nextRate: number) {
     if (!videoIdRef.current) return;
     try {
@@ -488,6 +499,14 @@ export function Looper() {
                       rate,
                     })}`
                   }
+                />
+              )}
+              {phase === "active" && status === "ready" && duration > 0 && !focus && videoId && (
+                <SavedLoops
+                  videoId={videoId}
+                  current={{ videoId, start: range[0], end: range[1], rate }}
+                  onApply={applySavedLoop}
+                  format={fmt}
                 />
               )}
             </div>

@@ -55,7 +55,10 @@ async function renderPlayingFromUrl() {
 }
 
 describe("Looper", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
   afterEach(() => {
     window.history.replaceState(null, "", "/");
   });
@@ -136,5 +139,22 @@ describe("Looper", () => {
     await renderPlaying();
     fireEvent.click(screen.getByRole("button", { name: /mark in/i }));
     expect(window.location.search).toMatch(/v=dQw4w9WgXcQ/);
+  });
+
+  it("applies a saved loop: sets range, rate and seeks without reloading", async () => {
+    const { source } = await renderPlaying();
+    fireEvent.change(screen.getByLabelText(/name this loop/i), { target: { value: "Bit" } });
+    fireEvent.click(screen.getByRole("button", { name: /save current loop/i }));
+    source.seekTo.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: /apply loop bit/i }));
+    expect(source.seekTo).toHaveBeenCalled();
+    expect(createPlayerMock).toHaveBeenCalledTimes(1); // player NOT recreated
+  });
+
+  it("hides saved loops in focus mode", async () => {
+    await renderPlaying();
+    expect(screen.getByRole("region", { name: /saved loops/i })).toBeInTheDocument();
+    fireEvent.keyDown(document.body, { key: "f" });
+    expect(screen.queryByRole("region", { name: /saved loops/i })).not.toBeInTheDocument();
   });
 });
