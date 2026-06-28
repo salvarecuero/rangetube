@@ -10,7 +10,7 @@ export function YouTubeFacade({ videoId, onActivate }: YouTubeFacadeProps) {
       type="button"
       onClick={onActivate}
       aria-label="Play video"
-      className="relative block aspect-video w-full overflow-hidden bg-black focus-visible:outline focus-visible:outline-2"
+      className="group relative block aspect-video w-full overflow-hidden rounded-[var(--radius-stage)] bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
     >
       <img
         src={thumb}
@@ -20,7 +20,11 @@ export function YouTubeFacade({ videoId, onActivate }: YouTubeFacadeProps) {
       />
       <span
         aria-hidden="true"
-        className="absolute inset-0 m-auto flex h-16 w-16 items-center justify-center rounded-full bg-black/70"
+        className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_45%,rgba(16,185,129,.25),transparent_70%)]"
+      />
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 m-auto flex h-20 w-20 items-center justify-center rounded-full border border-white/40 bg-white/20 text-3xl text-white backdrop-blur transition group-hover:scale-105"
       >
         ▶
       </span>
