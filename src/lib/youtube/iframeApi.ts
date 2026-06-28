@@ -9,6 +9,7 @@ interface YTNamespace {
       playerVars?: Record<string, number | string>;
       events?: {
         onReady?: (e: { target: YTPlayerLike }) => void;
+        onError?: (e: { data: number }) => void;
       };
     },
   ) => YTPlayerLike;
@@ -37,15 +38,35 @@ export function loadIframeApi(): Promise<YTNamespace> {
   return apiPromise;
 }
 
-/** Create a privacy-enhanced YT.Player mounted into `el`, resolving when ready. */
-export async function createPlayer(el: HTMLElement, videoId: string): Promise<YTPlayerLike> {
+export type CreatePlayerResult =
+  | { ok: true; player: YTPlayerLike }
+  | { ok: false; kind: "unavailable" | "timeout"; code?: number };
+
+/** Create a privacy-enhanced YT.Player mounted into `el`, resolving when ready or on error/timeout. */
+export async function createPlayer(
+  el: HTMLElement,
+  videoId: string,
+  opts: { timeoutMs?: number } = {},
+): Promise<CreatePlayerResult> {
+  const timeoutMs = opts.timeoutMs ?? 12000;
   const YT = await loadIframeApi();
-  return new Promise<YTPlayerLike>((resolve) => {
+  return new Promise<CreatePlayerResult>((resolve) => {
+    let settled = false;
+    const done = (r: CreatePlayerResult) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(r);
+    };
+    const timer = setTimeout(() => done({ ok: false, kind: "timeout" }), timeoutMs);
     new YT.Player(el, {
       videoId,
       host: "https://www.youtube-nocookie.com",
       playerVars: { autoplay: 1, playsinline: 1, rel: 0 },
-      events: { onReady: (e) => resolve(e.target) },
+      events: {
+        onReady: (e) => done({ ok: true, player: e.target }),
+        onError: (e) => done({ ok: false, kind: "unavailable", code: e.data }),
+      },
     });
   });
 }

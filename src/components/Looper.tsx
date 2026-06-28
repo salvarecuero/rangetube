@@ -61,8 +61,9 @@ export function Looper() {
 
   async function handleActivate() {
     if (!videoId || !playerHostRef.current) return;
-    const player = await createPlayer(playerHostRef.current, videoId);
-    const source = new YouTubeSource(player);
+    const result = await createPlayer(playerHostRef.current, videoId);
+    if (!result.ok) return;
+    const source = new YouTubeSource(result.player);
     sourceRef.current = source;
     const dur = source.getDuration();
     setDuration(dur);
