@@ -16,18 +16,28 @@ import { PlayerStage, type StageError } from "./PlayerStage";
 import { YouTubeFacade } from "./YouTubeFacade";
 import { ControlDeck } from "./ControlDeck";
 import { Compliance } from "./Compliance";
+import { encodeLoopParams, decodeLoopParams } from "../lib/share/loopParams";
+import type { LoopState } from "../lib/share/loopState";
 
 type Phase = "input" | "facade" | "active";
 type Status = "idle" | "loading" | "ready" | "error";
 const DEMO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 export function Looper() {
-  const [phase, setPhase] = useState<Phase>("input");
+  const [phase, setPhase] = useState<Phase>(() => {
+    return decodeLoopParams(window.location.search) ? "facade" : "input";
+  });
   const [status, setStatus] = useState<Status>("idle");
-  const [urlInput, setUrlInput] = useState("");
+  const [urlInput, setUrlInput] = useState(() => {
+    const decoded = decodeLoopParams(window.location.search);
+    return decoded ? `https://www.youtube.com/watch?v=${decoded.videoId}` : "";
+  });
   const [error, setError] = useState<string | null>(null);
   const [stageError, setStageError] = useState<StageError | null>(null);
-  const [videoId, setVideoId] = useState<string | null>(null);
+  const [videoId, setVideoId] = useState<string | null>(() => {
+    const decoded = decodeLoopParams(window.location.search);
+    return decoded ? decoded.videoId : null;
+  });
   const [duration, setDuration] = useState(0);
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [playing, setPlaying] = useState(false);
@@ -36,6 +46,9 @@ export function Looper() {
   const [timeMode, setTimeMode] = useState<TimeMode>("video");
   const [looping, setLooping] = useState(true);
   const [rate, setRate] = useState(1);
+  const [pendingState, setPendingState] = useState<LoopState | null>(() =>
+    decodeLoopParams(window.location.search),
+  );
 
   const playerHostRef = useRef<HTMLDivElement>(null);
   const keepWatchingRef = useRef<HTMLButtonElement>(null);
@@ -51,8 +64,10 @@ export function Looper() {
   // read fresh values from a stable (once-registered) event listener.
   const rangeRef = useRef<[number, number]>(range);
   const durationRef = useRef(duration);
+  const videoIdRef = useRef<string | null>(videoId);
   rangeRef.current = range;
   durationRef.current = duration;
+  videoIdRef.current = videoId;
 
   const { focus, toggle, exit } = useFocusMode({
     enterFocusRef: playPauseRef,
@@ -215,19 +230,33 @@ export function Looper() {
     sourceRef.current = nextSource;
     setSource(nextSource);
     const dur = nextSource.getDuration();
+    const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
+    let initialRange: [number, number] = [0, dur];
+    let initialRate = 1;
+    if (pendingState) {
+      const start = clamp(pendingState.start, 0, Math.max(0, dur - MIN_GAP));
+      const end = clamp(pendingState.end, start + MIN_GAP, dur);
+      initialRange = [start, end];
+      initialRate = pendingState.rate;
+      setPendingState(null);
+    }
     setDuration(dur);
-    setRange([0, dur]);
+    setRange(initialRange);
+    setRate(initialRate);
     const engine = new LoopEngine({
       getCurrentTime: () => nextSource.getCurrentTime(),
       seekTo: (s) => nextSource.seekTo(s),
     });
-    engine.setRange({ start: 0, end: dur });
+    engine.setRange({ start: initialRange[0], end: initialRange[1] });
     engine.setEnabled(looping);
     engine.start();
     engineRef.current = engine;
+    if (initialRate !== 1) nextSource.setPlaybackRate(initialRate);
+    if (initialRange[0] > 0) nextSource.seekTo(initialRange[0]);
     // Activation is user-initiated (the facade click), so kick off playback now —
     // YT's autoplay playerVar alone is unreliable when the player is API-created.
     nextSource.play();
+    syncUrl(initialRange, initialRate);
     setStatus("ready");
     setPlaying(true);
   }
@@ -252,6 +281,7 @@ export function Looper() {
   function commitRange(next: [number, number]) {
     setRange(next);
     engineRef.current?.setRange({ start: next[0], end: next[1] });
+    syncUrl(next, rate);
     if (scrubbing.current) {
       scrubbing.current = false;
       engineRef.current?.start();
@@ -298,6 +328,22 @@ export function Looper() {
   function changeRate(next: number) {
     setRate(next);
     sourceRef.current?.setPlaybackRate(next);
+    syncUrl(rangeRef.current, next);
+  }
+
+  function syncUrl(nextRange: [number, number], nextRate: number) {
+    if (!videoIdRef.current) return;
+    try {
+      const qs = encodeLoopParams({
+        videoId: videoIdRef.current,
+        start: nextRange[0],
+        end: nextRange[1],
+        rate: nextRate,
+      });
+      window.history.replaceState(null, "", `${window.location.pathname}?${qs}`);
+    } catch {
+      /* sandboxed iframe may block history — best-effort */
+    }
   }
 
   const fmt = (s: number) => formatTime(s, true);
@@ -432,6 +478,14 @@ export function Looper() {
                   onRate={changeRate}
                   onMarkIn={markCurrentIn}
                   onMarkOut={markCurrentOut}
+                  getShareUrl={() =>
+                    `${window.location.origin}${window.location.pathname}?${encodeLoopParams({
+                      videoId: videoId!,
+                      start: range[0],
+                      end: range[1],
+                      rate,
+                    })}`
+                  }
                 />
               )}
             </div>
