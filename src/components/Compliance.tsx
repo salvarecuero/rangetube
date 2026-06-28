@@ -5,7 +5,7 @@ export function Compliance() {
       <a
         href="https://www.youtube.com"
         rel="noopener"
-        className="inline-flex items-center gap-1.5 font-semibold text-ink underline-offset-2 hover:underline"
+        className="inline-flex items-center gap-1.5 font-semibold text-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 focus-visible:rounded-sm"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
           <path

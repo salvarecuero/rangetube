@@ -36,11 +36,11 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Paste a YouTube link (or video ID)"
-          className="min-w-0 flex-1 bg-transparent px-3 text-[15px] outline-none placeholder:text-brand-700/40"
+          className="min-w-0 flex-1 bg-transparent px-3 text-[15px] outline-none placeholder:text-brand-700/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 focus-visible:rounded-lg"
         />
         <button
           type="submit"
-          className="rounded-xl bg-[image:var(--rt-grad)] px-5 py-2.5 font-semibold text-brand-900 shadow-md shadow-brand-500/30 transition hover:brightness-105"
+          className="rounded-xl bg-[image:var(--rt-grad)] px-5 py-2.5 font-semibold text-brand-900 shadow-md shadow-brand-500/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
         >
           Load
         </button>
@@ -54,7 +54,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
         <button
           type="button"
           onClick={onTryExample}
-          className="text-sm font-semibold text-brand-700 underline underline-offset-4"
+          className="text-sm font-semibold text-brand-700 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 focus-visible:rounded-sm"
         >
           ▶ Try an example
         </button>

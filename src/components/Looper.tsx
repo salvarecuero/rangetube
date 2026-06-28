@@ -211,7 +211,7 @@ export function Looper() {
         <button
           type="button"
           onClick={exit}
-          className="fixed right-5 top-5 z-50 text-xs text-focus-muted hover:text-focus-ink"
+          className="fixed right-5 top-5 z-50 text-xs text-focus-muted hover:text-focus-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300 focus-visible:rounded-sm"
         >
           Focus mode · Esc to exit
         </button>
