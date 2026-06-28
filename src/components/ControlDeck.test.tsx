@@ -120,4 +120,19 @@ describe("ControlDeck", () => {
     fireEvent.click(screen.getByRole("button", { name: /1\.5/ }));
     expect(onRate).toHaveBeenCalledWith(1.5);
   });
+
+  it("renders Mark-In / Mark-Out buttons that call their handlers", () => {
+    const onMarkIn = vi.fn();
+    const onMarkOut = vi.fn();
+    render(<ControlDeck {...props({ onMarkIn, onMarkOut })} />);
+    fireEvent.click(screen.getByRole("button", { name: /mark in/i }));
+    fireEvent.click(screen.getByRole("button", { name: /mark out/i }));
+    expect(onMarkIn).toHaveBeenCalledTimes(1);
+    expect(onMarkOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("omits the mark buttons when no handlers are given", () => {
+    render(<ControlDeck {...props()} />);
+    expect(screen.queryByRole("button", { name: /mark in/i })).not.toBeInTheDocument();
+  });
 });

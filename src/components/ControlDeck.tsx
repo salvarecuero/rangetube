@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import { Play, Pause, RotateCcw, Repeat, Focus, ArrowRightLeft } from "lucide-react";
+import { Play, Pause, RotateCcw, Repeat, Focus, ArrowRightLeft, ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import { RangeSlider } from "./RangeSlider";
 import { SpeedControl } from "./SpeedControl";
 import { TimeField } from "./TimeField";
@@ -41,6 +41,10 @@ export interface ControlDeckProps {
   /** Current playback rate. */
   rate?: number;
   onRate?: (rate: number) => void;
+  /** Set A to the current playhead. */
+  onMarkIn?: () => void;
+  /** Set B to the current playhead. */
+  onMarkOut?: () => void;
 }
 
 export function ControlDeck({
@@ -70,6 +74,8 @@ export function ControlDeck({
   canSetSpeed = false,
   rate = 1,
   onRate,
+  onMarkIn,
+  onMarkOut,
 }: ControlDeckProps) {
   const dark = variant === "dark";
   const loopLength = Math.max(0, range[1] - range[0]);
@@ -180,6 +186,40 @@ export function ControlDeck({
               dark={dark}
             />
           </div>
+          {(onMarkIn || onMarkOut) && (
+            <div className="mt-1.5 flex items-center justify-center gap-2">
+              {onMarkIn && (
+                <button
+                  type="button"
+                  onClick={onMarkIn}
+                  title="Mark in — set A to current time ([)"
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+                    dark
+                      ? "border-white/12 bg-white/[0.06] text-brand-300 hover:border-brand-400"
+                      : "border-line bg-white text-brand-700 hover:border-brand-500"
+                  }`}
+                  aria-label="Mark in (set loop start to current time)"
+                >
+                  <ArrowLeftToLine className="h-3.5 w-3.5" aria-hidden="true" />A
+                </button>
+              )}
+              {onMarkOut && (
+                <button
+                  type="button"
+                  onClick={onMarkOut}
+                  title="Mark out — set B to current time (])"
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+                    dark
+                      ? "border-white/12 bg-white/[0.06] text-coral-500 hover:border-coral-500"
+                      : "border-line bg-white text-coral-600 hover:border-coral-600"
+                  }`}
+                  aria-label="Mark out (set loop end to current time)"
+                >
+                  B<ArrowRightToLine className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Restart · loop toggle · focus toggle */}
