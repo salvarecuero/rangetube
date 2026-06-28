@@ -44,8 +44,9 @@ export class LoopEngine {
   /** One evaluation of the loop condition. Pure given getCurrentTime/seekTo. */
   tick(): void {
     if (!this.range) return;
+    const EPSILON = 0.05; // seconds; absorbs polling/float drift at the loop end
     const t = this.getCurrentTime();
-    if (t >= this.range.end || t < this.range.start) {
+    if (t >= this.range.end - EPSILON || t < this.range.start) {
       this.seekTo(this.range.start);
     }
   }
