@@ -6,6 +6,7 @@ import { YouTubeSource } from "../lib/player/youtubeSource";
 import { LoopEngine } from "../lib/player/loopEngine";
 import { startPortfolioReady } from "../lib/embed/portfolioEmbed";
 import { formatTime } from "../lib/ui/formatTime";
+import { markIn, markOut, MIN_GAP } from "../lib/player/markRange";
 import { useFocusMode, isTypingTarget } from "../lib/ui/useFocusMode";
 import { usePlayhead } from "../lib/ui/usePlayhead";
 import type { TimeMode } from "../lib/ui/playhead";
@@ -46,6 +47,12 @@ export function Looper() {
   const engineRef = useRef<LoopEngine | null>(null);
   const scrubbing = useRef(false);
   const wasPlaying = useRef(false);
+  // Refs that always hold the current range/duration so mark-key handlers can
+  // read fresh values from a stable (once-registered) event listener.
+  const rangeRef = useRef<[number, number]>(range);
+  const durationRef = useRef(duration);
+  rangeRef.current = range;
+  durationRef.current = duration;
 
   const { focus, toggle, exit } = useFocusMode({
     enterFocusRef: playPauseRef,
@@ -78,6 +85,20 @@ export function Looper() {
     }
     document.addEventListener("keyup", onKeyUp);
     return () => document.removeEventListener("keyup", onKeyUp);
+  }, []);
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== "[" && e.key !== "]") return;
+      if (!sourceRef.current) return;
+      const t = e.target instanceof HTMLElement ? e.target : null;
+      if (isTypingTarget(t) || t?.closest('button, [role="slider"]')) return;
+      e.preventDefault();
+      if (e.key === "[") markCurrentIn();
+      else markCurrentOut();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(
     () => () => {
@@ -240,6 +261,16 @@ export function Looper() {
       }
     }
   }
+  function markCurrentIn() {
+    const s = sourceRef.current;
+    if (!s) return;
+    commitRange(markIn(rangeRef.current, s.getCurrentTime(), 0, durationRef.current, MIN_GAP));
+  }
+  function markCurrentOut() {
+    const s = sourceRef.current;
+    if (!s) return;
+    commitRange(markOut(rangeRef.current, s.getCurrentTime(), 0, durationRef.current, MIN_GAP));
+  }
   function seekTo(seconds: number) {
     sourceRef.current?.seekTo(seconds);
   }
@@ -399,6 +430,8 @@ export function Looper() {
                   canSetSpeed={source?.capabilities.speed ?? false}
                   rate={rate}
                   onRate={changeRate}
+                  onMarkIn={markCurrentIn}
+                  onMarkOut={markCurrentOut}
                 />
               )}
             </div>

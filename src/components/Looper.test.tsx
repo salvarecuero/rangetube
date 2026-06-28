@@ -11,7 +11,7 @@ vi.mock("../lib/youtube/iframeApi", () => ({ createPlayer: vi.fn() }));
  */
 async function renderPlaying() {
   const player = {
-    getCurrentTime: () => 0,
+    getCurrentTime: vi.fn().mockReturnValue(0),
     getDuration: () => 100,
     seekTo: vi.fn(),
     playVideo: vi.fn(),
@@ -28,6 +28,8 @@ async function renderPlaying() {
   fireEvent.click(screen.getByRole("button", { name: /load video/i }));
   fireEvent.click(await screen.findByRole("button", { name: /play video/i }));
   await waitFor(() => expect(createPlayer).toHaveBeenCalled());
+  // Wait for the ControlDeck to be rendered (status=ready + duration>0).
+  await waitFor(() => expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument());
   return { source: player };
 }
 
@@ -74,5 +76,20 @@ describe("Looper", () => {
     const { source } = await renderPlaying();
     fireEvent.click(screen.getByRole("button", { name: /1\.25× speed/i }));
     expect(source.setPlaybackRate).toHaveBeenCalledWith(1.25);
+  });
+
+  it("marks A and B to the current playhead with [ and ]", async () => {
+    const { source } = await renderPlaying();
+    source.getCurrentTime.mockReturnValue(30);
+    fireEvent.keyDown(document.body, { key: "[" });
+    await waitFor(() =>
+      expect(screen.getByRole("textbox", { name: /loop start/i })).toHaveValue("0:30.0"),
+    );
+
+    source.getCurrentTime.mockReturnValue(45);
+    fireEvent.keyDown(document.body, { key: "]" });
+    await waitFor(() =>
+      expect(screen.getByRole("textbox", { name: /loop end/i })).toHaveValue("0:45.0"),
+    );
   });
 });
