@@ -39,12 +39,17 @@ export function Looper() {
   const keepWatchingRef = useRef<HTMLButtonElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const currentTimeRef = useRef<HTMLSpanElement>(null);
+  const playPauseRef = useRef<HTMLButtonElement>(null);
+  const focusButtonRef = useRef<HTMLButtonElement>(null);
   const sourceRef = useRef<YouTubeSource | null>(null);
   const engineRef = useRef<LoopEngine | null>(null);
   const scrubbing = useRef(false);
   const wasPlaying = useRef(false);
 
-  const { focus, toggle, exit } = useFocusMode();
+  const { focus, toggle, exit } = useFocusMode({
+    enterFocusRef: playPauseRef,
+    exitFocusRef: focusButtonRef,
+  });
   usePlayhead(
     trackRef,
     source,
@@ -369,6 +374,8 @@ export function Looper() {
                   range={range}
                   playing={playing}
                   trackRef={trackRef}
+                  playPauseRef={playPauseRef}
+                  focusButtonRef={focusButtonRef}
                   onCommit={commitRange}
                   onPreview={previewRange}
                   onScrubStart={startScrub}

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { RefObject } from "react";
 
 const KEY = "rt:focus";
 
@@ -16,7 +17,14 @@ export interface FocusMode {
   toggle: () => void;
 }
 
-export function useFocusMode(): FocusMode {
+export interface FocusModeOptions {
+  /** Control to focus when entering focus mode (the play/pause button). */
+  enterFocusRef?: RefObject<HTMLElement | null>;
+  /** Control to focus when leaving focus mode (the focus-mode toggle). */
+  exitFocusRef?: RefObject<HTMLElement | null>;
+}
+
+export function useFocusMode({ enterFocusRef, exitFocusRef }: FocusModeOptions = {}): FocusMode {
   const [focus, setFocus] = useState(false);
 
   const enter = useCallback(() => {
@@ -38,6 +46,19 @@ export function useFocusMode(): FocusMode {
   }, []);
 
   const toggle = useCallback(() => (focus ? exit() : enter()), [focus, enter, exit]);
+
+  // Move focus to a sensible control on each transition so keyboard users land
+  // somewhere useful: the play/pause button on enter, the focus toggle on exit.
+  // We never trap focus — this is a one-time move; Tab and Esc keep working.
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return; // don't steal focus on initial mount
+    }
+    const target = focus ? enterFocusRef?.current : exitFocusRef?.current;
+    target?.focus();
+  }, [focus, enterFocusRef, exitFocusRef]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

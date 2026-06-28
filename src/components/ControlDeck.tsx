@@ -13,6 +13,10 @@ export interface ControlDeckProps {
   range: [number, number];
   playing: boolean;
   trackRef: RefObject<HTMLDivElement | null>;
+  /** Play/pause button — focused when entering focus mode. */
+  playPauseRef?: RefObject<HTMLButtonElement | null>;
+  /** Focus-mode toggle — focused when leaving focus mode. */
+  focusButtonRef?: RefObject<HTMLButtonElement | null>;
   /** Live current-time numerator is written here via rAF (no React re-render). */
   currentTimeRef: RefObject<HTMLSpanElement | null>;
   onCommit: (r: [number, number]) => void;
@@ -41,6 +45,8 @@ export function ControlDeck({
   range,
   playing,
   trackRef,
+  playPauseRef,
+  focusButtonRef,
   currentTimeRef,
   onCommit,
   onPreview,
@@ -85,6 +91,7 @@ export function ControlDeck({
       <div className="flex flex-wrap items-center justify-center gap-3 @2xl:flex-nowrap @2xl:gap-4">
         {/* Play — far left on wide, joins the button row on narrow */}
         <button
+          ref={playPauseRef}
           type="button"
           onClick={onPlayPause}
           aria-label={playing ? "Pause" : "Play"}
@@ -190,6 +197,7 @@ export function ControlDeck({
           </button>
           {showFocusButton && (
             <button
+              ref={focusButtonRef}
               type="button"
               onClick={onFocus}
               aria-label="Focus mode"
