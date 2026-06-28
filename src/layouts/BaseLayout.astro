@@ -1,28 +1,30 @@
 ---
 import "../styles/global.css";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
+  jsonLd?: object | object[];
 }
+
 const {
-  title = "RangeTube — Loop the exact part of any YouTube video",
-  description = "Loop a section of any YouTube video, endlessly. No ads, no signup — just the clip and you.",
+  title = "RangeTube — Loop a Section of Any YouTube Video Free",
+  description = "Pick a start and end time and loop only that part of any YouTube video — endlessly. Free A-B looper for practice. No sign-up.",
+  ogImage,
+  jsonLd,
 } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
-    <link rel="preconnect" href="https://i.ytimg.com" />
+    <BaseHead title={title} description={description} ogImage={ogImage} jsonLd={jsonLd} />
   </head>
-  <body class="min-h-screen bg-bg text-ink">
+  <body class="flex min-h-screen flex-col bg-bg text-ink">
     <slot />
+    <Footer />
   </body>
 </html>

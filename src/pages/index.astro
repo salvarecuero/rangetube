@@ -1,10 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { Looper } from "../components/Looper";
+import { webApplication } from "../lib/seo/schema";
+
+const jsonLd = webApplication(Astro.site!.toString());
 ---
 
-<BaseLayout>
-  <main class="@container/app mx-auto w-full">
+<BaseLayout jsonLd={jsonLd}>
+  <main class="@container/app mx-auto w-full flex-1">
     <Looper client:idle />
   </main>
 </BaseLayout>
