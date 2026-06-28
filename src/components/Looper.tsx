@@ -36,7 +36,11 @@ export function Looper() {
     function onKeyUp(e: KeyboardEvent) {
       if (e.key !== " " || !sourceRef.current) return;
       const s = sourceRef.current;
-      s.isPlaying() ? s.pause() : s.play();
+      if (s.isPlaying()) {
+        s.pause();
+      } else {
+        s.play();
+      }
     }
     document.addEventListener("keyup", onKeyUp);
     return () => document.removeEventListener("keyup", onKeyUp);

@@ -25,7 +25,9 @@ describe("Looper", () => {
 
   it("shows an error for an invalid URL on submit", () => {
     render(<Looper />);
-    fireEvent.change(screen.getByLabelText(/youtube video url/i), { target: { value: "nonsense" } });
+    fireEvent.change(screen.getByLabelText(/youtube video url/i), {
+      target: { value: "nonsense" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /load/i }));
     expect(screen.getByRole("alert")).toHaveTextContent(/valid youtube/i);
   });
