@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/preact";
 import { TimeField } from "./TimeField";
 
 function field(over: Partial<React.ComponentProps<typeof TimeField>> = {}) {
@@ -38,7 +38,10 @@ describe("TimeField", () => {
     render(field({ onCommit }));
     const input = screen.getByRole("textbox", { name: /loop start/i });
     fireEvent.change(input, { target: { value: "42" } });
-    fireEvent.blur(input);
+    // Preact attaches `onBlur` as a delegated `focusout` listener on the render
+    // root, so the blur must be dispatched as a bubbling `focusout` to reach it
+    // (a non-bubbling `blur` event never propagates to the delegated listener).
+    input.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
     expect(onCommit).toHaveBeenCalledWith(42);
   });
 

@@ -1,13 +1,29 @@
 import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
+import preact from "@preact/preset-vite";
+import { createRequire } from "node:module";
 
-// `react()` is typed against a different bundled Vite copy than Vitest's config
-// (Astro/rolldown-vite vs. Vitest's vite), so its Plugin type is structurally
-// incompatible here. This is a types-only mismatch — the plugin works correctly
-// (JSX tests pass) — so we cast to silence it.
+const require = createRequire(import.meta.url);
+// lucide-react's package.json sets `main` to a CommonJS build and only exposes
+// the ESM build via `module`. Vitest resolves to the CJS entry, whose
+// `require("react")` is loaded as a separate preact/compat instance from the
+// ESM one the test renderer uses — two preact instances break preact's hook
+// context lookup ("Cannot read properties of undefined (reading 'context')").
+// Pin lucide-react to its ESM build so its `react` import flows through the same
+// module graph and the `react -> preact/compat` alias below resolves to one
+// shared instance.
+const lucideEsm = require.resolve("lucide-react/dist/esm/lucide-react.mjs");
+
 export default defineConfig({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  plugins: [react() as any],
+  plugins: [preact() as any],
+  resolve: {
+    alias: {
+      react: "preact/compat",
+      "react-dom": "preact/compat",
+      "react/jsx-runtime": "preact/jsx-runtime",
+      "lucide-react": lucideEsm,
+    },
+  },
   test: {
     environment: "jsdom",
     globals: true,
