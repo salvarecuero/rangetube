@@ -1,5 +1,14 @@
 import type { RefObject } from "react";
-import { Play, Pause, RotateCcw, Repeat, Focus, ArrowRightLeft, ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Repeat,
+  Focus,
+  ArrowRightLeft,
+  ArrowLeftToLine,
+  ArrowRightToLine,
+} from "lucide-react";
 import { RangeSlider } from "./RangeSlider";
 import { SpeedControl } from "./SpeedControl";
 import { TimeField } from "./TimeField";
