@@ -137,4 +137,18 @@ describe("ControlDeck", () => {
     render(<ControlDeck {...props()} />);
     expect(screen.queryByRole("button", { name: /mark in/i })).not.toBeInTheDocument();
   });
+
+  it("copies the share URL and announces it", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    render(<ControlDeck {...props({ getShareUrl: () => "https://rangetube.app/?v=x&s=1&e=2" })} />);
+    fireEvent.click(screen.getByRole("button", { name: /copy link/i }));
+    expect(writeText).toHaveBeenCalledWith("https://rangetube.app/?v=x&s=1&e=2");
+    expect(await screen.findByText(/copied/i)).toBeInTheDocument();
+  });
+
+  it("omits the copy-link button without getShareUrl", () => {
+    render(<ControlDeck {...props()} />);
+    expect(screen.queryByRole("button", { name: /copy link/i })).not.toBeInTheDocument();
+  });
 });
