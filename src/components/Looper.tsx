@@ -7,6 +7,7 @@ import { startPortfolioReady } from "../lib/embed/portfolioEmbed";
 import { YouTubeFacade } from "./YouTubeFacade";
 import { RangeSlider } from "./RangeSlider";
 import { formatTime } from "../lib/ui/formatTime";
+import { Compliance } from "./Compliance";
 
 type Phase = "input" | "facade" | "playing";
 
@@ -134,12 +135,7 @@ export function Looper() {
         />
       )}
 
-      <p className="text-sm text-neutral-500">
-        <a href="https://www.youtube.com" rel="noopener" className="underline">
-          Developed with YouTube
-        </a>{" "}
-        · RangeTube is not affiliated with or endorsed by YouTube or Google.
-      </p>
+      <Compliance />
     </section>
   );
 }
