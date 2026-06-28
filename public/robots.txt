@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rangetube.salvarecuero.dev/sitemap-index.xml
