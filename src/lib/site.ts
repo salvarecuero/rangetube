@@ -18,3 +18,11 @@ export const USE_CASE_LINKS = [
   { href: "/for/dancers", label: "Dancers" },
   { href: "/for/students", label: "Students" },
 ] as const;
+
+/** Footer "Guides" row targets. Must cover exactly the slugs in src/content/howTos.ts. */
+export const HOWTO_LINKS = [
+  { href: "/how-to/loop-a-section-of-a-youtube-video", label: "Loop a section" },
+  { href: "/how-to/ab-loop-youtube", label: "A-B loop" },
+  { href: "/how-to/slow-down-a-youtube-video", label: "Slow down" },
+  { href: "/how-to/loop-youtube-on-mobile", label: "On mobile" },
+] as const;
