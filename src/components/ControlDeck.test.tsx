@@ -112,7 +112,9 @@ describe("ControlDeck", () => {
 
   it("shows the speed control only when the source supports speed", () => {
     const onRate = vi.fn();
-    const { rerender } = render(<ControlDeck {...props({ canSetSpeed: false, rate: 1, onRate })} />);
+    const { rerender } = render(
+      <ControlDeck {...props({ canSetSpeed: false, rate: 1, onRate })} />,
+    );
     expect(screen.queryByRole("group", { name: /playback speed/i })).not.toBeInTheDocument();
 
     rerender(<ControlDeck {...props({ canSetSpeed: true, rate: 1, onRate })} />);
