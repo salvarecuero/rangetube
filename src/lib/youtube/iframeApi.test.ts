@@ -3,7 +3,17 @@ import { createPlayer } from "./iframeApi";
 
 function fakeYT(behavior: "ready" | "error" | "silent") {
   return {
-    Player: vi.fn().mockImplementation((_el, opts) => {
+    // Regular function (not an arrow) so it is constructable via `new YT.Player(...)`;
+    // vitest 4 no longer auto-wraps mock implementations to be newable.
+    Player: vi.fn().mockImplementation(function (
+      _el: unknown,
+      opts: {
+        events: {
+          onReady: (e: { target: unknown }) => void;
+          onError: (e: { data: number }) => void;
+        };
+      },
+    ) {
       const target = { _id: 1 } as never;
       if (behavior === "ready") queueMicrotask(() => opts.events.onReady({ target }));
       if (behavior === "error") queueMicrotask(() => opts.events.onError({ data: 150 }));
