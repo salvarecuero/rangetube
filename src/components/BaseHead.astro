@@ -1,0 +1,51 @@
+---
+import { buildHeadMeta } from "../lib/seo/meta";
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogType?: string;
+  noindex?: boolean;
+  jsonLd?: object | object[];
+}
+
+const { title, description, ogImage, ogType, noindex, jsonLd } = Astro.props;
+const meta = buildHeadMeta({
+  title,
+  description,
+  site: Astro.site!,
+  pathname: Astro.url.pathname,
+  ogImage,
+  ogType,
+  noindex,
+});
+const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{meta.title}</title>
+<meta name="description" content={meta.description} />
+{meta.noindex && <meta name="robots" content="noindex,nofollow" />}
+<link rel="canonical" href={meta.canonical} />
+
+<meta property="og:site_name" content="RangeTube" />
+<meta property="og:title" content={meta.ogTitle} />
+<meta property="og:description" content={meta.ogDescription} />
+<meta property="og:url" content={meta.ogUrl} />
+<meta property="og:image" content={meta.ogImage} />
+<meta property="og:type" content={meta.ogType} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={meta.ogTitle} />
+<meta name="twitter:description" content={meta.ogDescription} />
+<meta name="twitter:image" content={meta.ogImage} />
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" href="/favicon.ico" />
+<meta name="theme-color" content="#0d9488" />
+<meta name="generator" content={Astro.generator} />
+<link rel="preconnect" href="https://www.youtube-nocookie.com" />
+<link rel="preconnect" href="https://i.ytimg.com" />
+
+{jsonLdItems.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
