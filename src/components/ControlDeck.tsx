@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import { useState, type RefObject } from "react";
 import {
   Play,
   Pause,
@@ -8,6 +8,8 @@ import {
   ArrowRightLeft,
   ArrowLeftToLine,
   ArrowRightToLine,
+  Link2,
+  Check,
 } from "lucide-react";
 import { RangeSlider } from "./RangeSlider";
 import { SpeedControl } from "./SpeedControl";
@@ -54,6 +56,8 @@ export interface ControlDeckProps {
   onMarkIn?: () => void;
   /** Set B to the current playhead. */
   onMarkOut?: () => void;
+  /** Build the absolute deep-link URL for the current loop (enables Copy link). */
+  getShareUrl?: () => string;
 }
 
 export function ControlDeck({
@@ -85,8 +89,22 @@ export function ControlDeck({
   onRate,
   onMarkIn,
   onMarkOut,
+  getShareUrl,
 }: ControlDeckProps) {
   const dark = variant === "dark";
+
+  const [copied, setCopied] = useState(false);
+  async function copyLink() {
+    if (!getShareUrl) return;
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard blocked — no-op; URL is still in the address bar */
+    }
+  }
+
   const loopLength = Math.max(0, range[1] - range[0]);
   const denom = timeMode === "loop" ? format(loopLength) : format(max);
   const modeLabel = timeMode === "loop" ? "in loop" : "in video";
@@ -268,6 +286,33 @@ export function ControlDeck({
             >
               <Focus className="h-5 w-5" aria-hidden="true" />
             </button>
+          )}
+          {getShareUrl && (
+            <span className="relative inline-flex items-center">
+              <button
+                type="button"
+                onClick={copyLink}
+                aria-label="Copy link to this loop"
+                title="Copy a shareable link to this loop"
+                className={clusterBtn(false)}
+              >
+                {copied ? (
+                  <Check className="h-5 w-5" aria-hidden="true" />
+                ) : (
+                  <Link2 className="h-5 w-5" aria-hidden="true" />
+                )}
+              </button>
+              {copied && (
+                <span
+                  role="status"
+                  className={`absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-semibold ${
+                    dark ? "bg-white/15 text-focus-ink" : "bg-ink text-white"
+                  }`}
+                >
+                  Copied!
+                </span>
+              )}
+            </span>
           )}
         </div>
       </div>
