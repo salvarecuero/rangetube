@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 const KEY = "rt:focus";
 
-function isTypingTarget(t: EventTarget | null): boolean {
+export function isTypingTarget(t: EventTarget | null): boolean {
   const el = t as HTMLElement | null;
   if (!el) return false;
   const tag = el.tagName;

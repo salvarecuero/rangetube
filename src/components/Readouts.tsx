@@ -13,7 +13,7 @@ export function Readouts({ start, end, format, variant = "light" }: ReadoutsProp
     { k: "End", v: format(end) },
   ];
   return (
-    <div className="flex gap-2.5">
+    <div className="flex flex-col gap-2.5 @sm:flex-row">
       {cells.map((c) => (
         <div
           key={c.k}

@@ -5,7 +5,7 @@ import { YouTubeSource } from "../lib/player/youtubeSource";
 import { LoopEngine } from "../lib/player/loopEngine";
 import { startPortfolioReady } from "../lib/embed/portfolioEmbed";
 import { formatTime } from "../lib/ui/formatTime";
-import { useFocusMode } from "../lib/ui/useFocusMode";
+import { useFocusMode, isTypingTarget } from "../lib/ui/useFocusMode";
 import { usePlayhead } from "../lib/ui/usePlayhead";
 import { HeroInput } from "./HeroInput";
 import { PlayerStage, type StageError } from "./PlayerStage";
@@ -41,6 +41,8 @@ export function Looper() {
   useEffect(() => {
     function onKeyUp(e: KeyboardEvent) {
       if (e.key !== " " || !sourceRef.current) return;
+      const t = e.target as HTMLElement | null;
+      if (isTypingTarget(t) || t?.closest('button, [role="slider"]')) return;
       const s = sourceRef.current;
       if (s.isPlaying()) {
         s.pause();
@@ -152,7 +154,7 @@ export function Looper() {
       className="group/shell min-h-[60vh] transition-colors duration-500 data-[focus=true]:min-h-screen data-[focus=true]:bg-focus-bg"
     >
       <div aria-live="polite" className="sr-only">
-        {focus ? "Focus mode on" : ""}
+        {focus ? "Focus mode on" : "Focus mode off"}
         {status === "loading" ? "Loading video" : ""}
         {status === "ready" ? `Looping ${fmt(range[0])} to ${fmt(range[1])}` : ""}
       </div>
@@ -204,7 +206,7 @@ export function Looper() {
           />
         )}
 
-        {!focus && <Compliance />}
+        <Compliance dark={focus} />
       </section>
 
       {focus && (
