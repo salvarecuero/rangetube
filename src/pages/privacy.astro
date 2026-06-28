@@ -1,0 +1,87 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import DraftBanner from "../components/DraftBanner.astro";
+---
+
+<PageLayout
+  title="Privacy Policy — RangeTube"
+  description="How RangeTube handles data: no backend, no accounts, no PII collected by us — and what the embedded YouTube player sends to Google."
+>
+  <h1>Privacy Policy</h1>
+  <p><em>Last updated: 28 June 2026.</em></p>
+  <DraftBanner />
+
+  <h2>1. The short version</h2>
+  <p>
+    RangeTube has no backend, no accounts, and no database. We do not collect or store any personal
+    information about you. The privacy considerations on this site come almost entirely from the
+    embedded YouTube player, which connects your browser directly to Google.
+  </p>
+
+  <h2>2. What RangeTube itself collects</h2>
+  <p>
+    Nothing personal. The site is a static page served to your browser. We run no server that
+    receives your data, set no first-party tracking cookies, and keep no logs of your activity. Any
+    settings the tool needs are kept locally in your own browser.
+  </p>
+
+  <h2>3. The embedded YouTube player</h2>
+  <p>
+    To play a video, RangeTube embeds YouTube's official player. We load it in privacy-enhanced mode
+    (<code>youtube-nocookie.com</code>) and only after you click to play — but you should understand
+    what that involves:
+  </p>
+  <ul>
+    <li>
+      When the player loads or plays, your browser connects directly to Google/YouTube. Google can
+      receive your IP address, device and browser information, and details about the video and the
+      page, and may set cookies or other storage. This data may be processed in the United States.
+    </li>
+    <li>
+      Privacy-enhanced mode reduces personalization and defers cookies until playback, but it does
+      not eliminate data collection: a local identifier may still be written and your IP address is
+      still sent to Google when the player loads.
+    </li>
+    <li>This processing is governed by Google's privacy policy, not ours.</li>
+  </ul>
+  <p>
+    RangeTube uses YouTube API Services. By using the player you are also subject to the
+    <a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a> and the
+    <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+  </p>
+
+  <h2>4. Analytics</h2>
+  <p>
+    RangeTube currently uses no analytics and no advertising or tracking scripts of its own. If we
+    add privacy-friendly, cookieless analytics in the future, we will update this policy first.
+  </p>
+
+  <h2>5. Your rights and who is responsible (GDPR/UK)</h2>
+  <p>
+    The operator of RangeTube is an individual based in Uruguay; contact:
+    <a href="mailto:contact@salvarecuero.dev">contact@salvarecuero.dev</a>. Because the YouTube embed
+    transmits data to Google, the following applies to visitors in the EU/UK:
+  </p>
+  <ul>
+    <li>
+      <strong>Purpose &amp; basis:</strong> the only third-party data flow is what is needed to play a
+      video you choose to load. The click to play is the action that initiates it.
+    </li>
+    <li>
+      <strong>Recipients &amp; transfers:</strong> Google/YouTube (YouTube LLC / Google Ireland Ltd),
+      with possible transfer to the United States.
+    </li>
+    <li><strong>Retention:</strong> RangeTube retains nothing; Google's retention is set by Google.</li>
+    <li>
+      <strong>Your rights:</strong> you may exercise access, rectification, erasure, and related
+      rights against Google directly. You may also lodge a complaint with your local data-protection
+      supervisory authority.
+    </li>
+  </ul>
+
+  <h2>6. Changes</h2>
+  <p>
+    We may update this policy; the "last updated" date above reflects the current version. Material
+    changes will be reflected here.
+  </p>
+</PageLayout>
