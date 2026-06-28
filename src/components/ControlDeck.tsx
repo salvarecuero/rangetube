@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import { Play, Pause, RotateCcw, Repeat, Focus, ArrowRightLeft } from "lucide-react";
 import { RangeSlider } from "./RangeSlider";
+import { SpeedControl } from "./SpeedControl";
 import { TimeField } from "./TimeField";
 import type { TimeMode } from "../lib/ui/playhead";
 import { MIN_GAP } from "../lib/player/markRange";
@@ -35,6 +36,11 @@ export interface ControlDeckProps {
   format: (seconds: number) => string;
   showFocusButton?: boolean;
   variant?: "light" | "dark";
+  /** Whether the active source supports speed (capability-gated). */
+  canSetSpeed?: boolean;
+  /** Current playback rate. */
+  rate?: number;
+  onRate?: (rate: number) => void;
 }
 
 export function ControlDeck({
@@ -61,6 +67,9 @@ export function ControlDeck({
   format,
   showFocusButton = true,
   variant = "light",
+  canSetSpeed = false,
+  rate = 1,
+  onRate,
 }: ControlDeckProps) {
   const dark = variant === "dark";
   const loopLength = Math.max(0, range[1] - range[0]);
@@ -175,6 +184,7 @@ export function ControlDeck({
 
         {/* Restart · loop toggle · focus toggle */}
         <div className="order-3 flex shrink-0 items-center gap-2">
+          {canSetSpeed && onRate && <SpeedControl rate={rate} onRate={onRate} dark={dark} />}
           <button
             type="button"
             onClick={onRestart}
