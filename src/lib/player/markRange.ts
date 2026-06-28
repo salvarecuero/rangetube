@@ -8,7 +8,7 @@ export function markIn(
   range: [number, number],
   t: number,
   min: number,
-  max: number,
+  _max: number,
   gap: number,
 ): [number, number] {
   return [clamp(t, min, range[1] - gap), range[1]];
@@ -18,7 +18,7 @@ export function markIn(
 export function markOut(
   range: [number, number],
   t: number,
-  min: number,
+  _min: number,
   max: number,
   gap: number,
 ): [number, number] {

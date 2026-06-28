@@ -139,6 +139,8 @@ describe("Looper", () => {
     await renderPlaying();
     fireEvent.click(screen.getByRole("button", { name: /mark in/i }));
     expect(window.location.search).toMatch(/v=dQw4w9WgXcQ/);
+    expect(window.location.search).toMatch(/s=\d/);
+    expect(window.location.search).toMatch(/e=\d/);
   });
 
   it("applies a saved loop: sets range, rate and seeks without reloading", async () => {
@@ -146,8 +148,17 @@ describe("Looper", () => {
     fireEvent.change(screen.getByLabelText(/name this loop/i), { target: { value: "Bit" } });
     fireEvent.click(screen.getByRole("button", { name: /save current loop/i }));
     source.seekTo.mockClear();
+    source.setPlaybackRate.mockClear();
     fireEvent.click(screen.getByRole("button", { name: /apply loop bit/i }));
     expect(source.seekTo).toHaveBeenCalled();
+    expect(source.setPlaybackRate).toHaveBeenCalledWith(1); // saved loop captured rate=1
+    // The saved loop was captured at start=0, end=100 (the initial full-duration range).
+    await waitFor(() =>
+      expect(screen.getByRole("textbox", { name: /loop start/i })).toHaveValue("0:00.0"),
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("textbox", { name: /loop end/i })).toHaveValue("1:40.0"),
+    );
     expect(createPlayerMock).toHaveBeenCalledTimes(1); // player NOT recreated
   });
 
