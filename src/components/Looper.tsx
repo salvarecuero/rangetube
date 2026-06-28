@@ -34,6 +34,7 @@ export function Looper() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [timeMode, setTimeMode] = useState<TimeMode>("video");
   const [looping, setLooping] = useState(true);
+  const [rate, setRate] = useState(1);
 
   const playerHostRef = useRef<HTMLDivElement>(null);
   const keepWatchingRef = useRef<HTMLButtonElement>(null);
@@ -263,6 +264,10 @@ export function Looper() {
       return next;
     });
   }
+  function changeRate(next: number) {
+    setRate(next);
+    sourceRef.current?.setPlaybackRate(next);
+  }
 
   const fmt = (s: number) => formatTime(s, true);
 
@@ -391,6 +396,9 @@ export function Looper() {
                   focusActive={focus}
                   format={fmt}
                   variant={focus ? "dark" : "light"}
+                  canSetSpeed={source?.capabilities.speed ?? false}
+                  rate={rate}
+                  onRate={changeRate}
                 />
               )}
             </div>
