@@ -10,7 +10,7 @@ export interface TransportProps {
 }
 
 const iconBtn =
-  "grid h-11 w-11 place-items-center rounded-[14px] border border-line bg-white text-brand-700 transition hover:border-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500";
+  "grid h-10 w-10 place-items-center rounded-[14px] border border-line bg-white text-brand-700 transition hover:border-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500";
 
 export function Transport({
   playing,
@@ -20,7 +20,7 @@ export function Transport({
   showFocusButton = true,
 }: TransportProps) {
   return (
-    <div className="flex items-center justify-center gap-3.5">
+    <div className="flex items-center justify-center gap-3">
       <button type="button" onClick={onRestart} aria-label="Restart loop" className={iconBtn}>
         <RotateCcw className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -28,7 +28,7 @@ export function Transport({
         type="button"
         onClick={onPlayPause}
         aria-label={playing ? "Pause" : "Play"}
-        className="grid h-[60px] w-[60px] place-items-center rounded-full bg-[image:var(--rt-grad)] text-brand-900 shadow-lg shadow-brand-500/35 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+        className="grid h-[52px] w-[52px] place-items-center rounded-full bg-[image:var(--rt-grad)] text-brand-900 shadow-lg shadow-brand-500/35 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
       >
         {playing ? (
           <Pause className="h-6 w-6" aria-hidden="true" />

@@ -13,11 +13,11 @@ export function Readouts({ start, end, format, variant = "light" }: ReadoutsProp
     { k: "End (B)", v: format(end), dot: "var(--color-coral-600)" },
   ];
   return (
-    <div className="flex flex-col gap-2.5 @sm:flex-row">
+    <div className="flex flex-col gap-2 @sm:flex-row @sm:flex-wrap @sm:justify-center">
       {cells.map((c) => (
         <div
           key={c.k}
-          className={`flex-1 rounded-[14px] border px-3.5 py-2.5 ${
+          className={`rounded-[14px] border px-3.5 py-2 @sm:flex-none @sm:min-w-[7rem] ${
             c.accent
               ? dark
                 ? "border-transparent bg-brand-500/15"
@@ -36,7 +36,7 @@ export function Readouts({ start, end, format, variant = "light" }: ReadoutsProp
             {c.k}
           </div>
           <div
-            className={`tabnum mt-0.5 text-xl ${
+            className={`tabnum mt-0.5 text-lg ${
               c.accent
                 ? dark
                   ? "text-brand-300"

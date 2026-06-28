@@ -1,4 +1,4 @@
-import { type KeyboardEvent, type PointerEvent, forwardRef, useRef } from "react";
+import { type KeyboardEvent, type PointerEvent, forwardRef, useRef, useState } from "react";
 import { valueFromPointer } from "../lib/ui/sliderMath";
 
 export interface RangeSliderProps {
@@ -10,8 +10,12 @@ export interface RangeSliderProps {
   minGap?: number;
   /** Commit (e.g. engine.setRange) — fires on keyboard change and pointer release. */
   onChange: (value: [number, number]) => void;
-  /** Live preview during a drag (e.g. seek) — does NOT commit. */
-  onPreview?: (value: [number, number]) => void;
+  /** Live preview during a drag — `scrubSeconds` is the thumb's current second. Does NOT commit. */
+  onPreview?: (value: [number, number], scrubSeconds: number) => void;
+  /** Fired when a thumb drag begins (e.g. to pause playback while scrubbing). */
+  onScrubStart?: () => void;
+  /** Jump the playhead to a point on the track (clicking the bar, not a thumb). */
+  onSeek?: (value: number) => void;
   formatValueText?: (value: number) => string;
 }
 
@@ -20,12 +24,13 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function RangeSlider(
-  { min, max, value, step = 1, minGap = 0, onChange, onPreview, formatValueText },
+  { min, max, value, step = 1, minGap = 0, onChange, onPreview, onScrubStart, onSeek, formatValueText },
   trackRef,
 ) {
   const [start, end] = value;
   const localTrack = useRef<HTMLDivElement | null>(null);
   const dragging = useRef<null | "start" | "end">(null);
+  const [hover, setHover] = useState<{ pct: number; value: number } | null>(null);
 
   function keyDelta(e: KeyboardEvent): number | "min" | "max" | null {
     switch (e.key) {
@@ -80,8 +85,34 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function
   function thumbDown(which: "start" | "end") {
     return (e: PointerEvent) => {
       dragging.current = which;
+      setHover(null);
+      onScrubStart?.();
       (e.target as Element).setPointerCapture(e.pointerId);
     };
+  }
+
+  /** Press on the bar itself (not a thumb) jumps the playhead to that point. */
+  function trackDown(e: PointerEvent): void {
+    if ((e.target as HTMLElement).closest('[role="slider"]')) return;
+    const el = localTrack.current;
+    if (!el || !onSeek) return;
+    onSeek(valueFromPointer(e.clientX, el.getBoundingClientRect(), min, max, step));
+  }
+
+  /** Track the hovered time so the tooltip can show it (skipped while dragging). */
+  function trackHover(e: PointerEvent): void {
+    if (dragging.current) return;
+    const el = localTrack.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    setHover({ pct: ratio * 100, value: valueFromPointer(e.clientX, rect, min, max, step) });
+  }
+
+  function onTrackMove(e: PointerEvent): void {
+    thumbMove(e);
+    trackHover(e);
   }
 
   function thumbMove(e: PointerEvent): void {
@@ -94,7 +125,7 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function
       which === "start"
         ? [clamp(raw, min, end - minGap), end]
         : [start, clamp(raw, start + minGap, max)];
-    onPreview?.(next);
+    onPreview?.(next, which === "start" ? next[0] : next[1]);
   }
 
   function thumbUp(e: PointerEvent): void {
@@ -121,13 +152,24 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function
   };
 
   return (
-    <div role="group" aria-label="Loop range" className="relative py-3">
+    <div role="group" aria-label="Loop range" className="relative py-2">
       <div
         ref={setTrack}
-        className="relative flex h-11 items-center"
-        onPointerMove={thumbMove}
+        className="relative flex h-11 cursor-pointer items-center"
+        onPointerDown={trackDown}
+        onPointerMove={onTrackMove}
         onPointerUp={thumbUp}
+        onPointerLeave={() => setHover(null)}
       >
+        {hover && (
+          <div
+            aria-hidden="true"
+            className="tabnum pointer-events-none absolute bottom-full z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-[11px] font-medium text-white shadow-lg"
+            style={{ left: `${hover.pct}%` }}
+          >
+            {text(hover.value)}
+          </div>
+        )}
         <div className="absolute inset-x-0 h-2.5 rounded-full bg-line shadow-inner" />
         <div
           data-testid="slider-fill"

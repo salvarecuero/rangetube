@@ -62,4 +62,18 @@ describe("RangeSlider", () => {
     render(<RangeSlider min={0} max={100} value={[20, 60]} onChange={() => {}} />);
     expect(screen.getByTestId("slider-fill")).toBeInTheDocument();
   });
+
+  it("seeks to the pointer position when the track (not a thumb) is pressed", () => {
+    const onSeek = vi.fn();
+    render(<RangeSlider min={0} max={100} value={[10, 90]} onChange={() => {}} onSeek={onSeek} />);
+    fireEvent.pointerDown(screen.getByTestId("slider-fill"), { clientX: 0 });
+    expect(onSeek).toHaveBeenCalled();
+  });
+
+  it("does not seek when a thumb itself is pressed", () => {
+    const onSeek = vi.fn();
+    render(<RangeSlider min={0} max={100} value={[10, 90]} onChange={() => {}} onSeek={onSeek} />);
+    fireEvent.pointerDown(screen.getByRole("slider", { name: /loop start/i }), { clientX: 0 });
+    expect(onSeek).not.toHaveBeenCalled();
+  });
 });
