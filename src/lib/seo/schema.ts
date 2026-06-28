@@ -1,4 +1,32 @@
 /** schema.org JSON-LD generators. */
+
+/** A schema.org FAQPage built from question/answer pairs. */
+export function faqPage(faq: { q: string; a: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}
+
+/** A schema.org BreadcrumbList; `path`s are resolved against `site` to absolute URLs. */
+export function breadcrumbList(crumbs: { name: string; path: string }[], site: string | URL) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.name,
+      item: new URL(c.path, site).toString(),
+    })),
+  };
+}
+
 export function webApplication(siteUrl: string) {
   const url = siteUrl.endsWith("/") ? siteUrl : `${siteUrl}/`;
   return {
