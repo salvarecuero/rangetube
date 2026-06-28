@@ -16,6 +16,7 @@ export interface ControlDeckProps {
   onFocus: () => void;
   format: (seconds: number) => string;
   showFocusButton?: boolean;
+  variant?: "light" | "dark";
 }
 
 export function ControlDeck({
@@ -31,10 +32,14 @@ export function ControlDeck({
   onFocus,
   format,
   showFocusButton,
+  variant = "light",
 }: ControlDeckProps) {
+  const dark = variant === "dark";
   return (
-    <div className="flex flex-col gap-5 rounded-[var(--radius-stage)] border border-line bg-surface p-5 shadow-xl shadow-brand-900/5">
-      <Readouts start={range[0]} end={range[1]} format={format} />
+    <div
+      className={`flex flex-col gap-5 rounded-[var(--radius-stage)] border p-5 transition-colors duration-500 ${dark ? "border-white/10 bg-white/[0.06] backdrop-blur" : "border-line bg-surface shadow-xl shadow-brand-900/5"}`}
+    >
+      <Readouts start={range[0]} end={range[1]} format={format} variant={variant} />
       <div>
         <RangeSlider
           ref={trackRef}
@@ -46,7 +51,9 @@ export function ControlDeck({
           onPreview={onPreview}
           formatValueText={format}
         />
-        <div className="tabnum flex justify-between text-[11px] text-muted">
+        <div
+          className={`tabnum flex justify-between text-[11px] ${dark ? "text-focus-muted" : "text-muted"}`}
+        >
           <span>{format(min)}</span>
           <span>{format(max)}</span>
         </div>
