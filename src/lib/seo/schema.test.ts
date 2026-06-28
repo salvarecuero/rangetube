@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { webApplication, faqPage, breadcrumbList } from "./schema";
+import { webApplication, faqPage, breadcrumbList, howTo } from "./schema";
 
 describe("webApplication", () => {
   const obj = webApplication("https://rangetube.salvarecuero.dev");
@@ -56,5 +56,34 @@ describe("breadcrumbList", () => {
     });
     expect(obj.itemListElement[1].position).toBe(2);
     expect(obj.itemListElement[1].item).toBe("https://rangetube.salvarecuero.dev/for/musicians");
+  });
+});
+
+describe("howTo", () => {
+  const obj = howTo({
+    name: "How to loop a section of a YouTube video",
+    description: "Loop just one part in three steps.",
+    steps: [
+      { name: "Paste the link", text: "Paste the URL." },
+      { name: "Set the range", text: "Drag the handles." },
+      { name: "Press play", text: "It loops." },
+    ],
+  });
+
+  it("is a HowTo with the given name and description", () => {
+    expect(obj["@type"]).toBe("HowTo");
+    expect(obj.name).toBe("How to loop a section of a YouTube video");
+    expect(obj.description).toBe("Loop just one part in three steps.");
+  });
+
+  it("has one ordered HowToStep per entry", () => {
+    expect(obj.step).toHaveLength(3);
+    expect(obj.step[0]).toEqual({
+      "@type": "HowToStep",
+      position: 1,
+      name: "Paste the link",
+      text: "Paste the URL.",
+    });
+    expect(obj.step[2].position).toBe(3);
   });
 });
