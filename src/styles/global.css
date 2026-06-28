@@ -1,1 +1,63 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+
+  /* brand teal/emerald (v1-anchored) */
+  --color-brand-50: #ecfdf6;
+  --color-brand-100: #d1faec;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #34d399;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #0b4f47;
+  --color-brand-900: #06201c;
+
+  /* surfaces (light airy) */
+  --color-surface: #ffffff;
+  --color-bg: #eef5f3;
+  --color-bg-2: #e3f0ec;
+  --color-ink: #0c211d;
+  --color-muted: #5b736d;
+  --color-line: #d6e6e1;
+
+  /* focus-mode dark */
+  --color-focus-bg: #081312;
+  --color-focus-bg-2: #0c1b19;
+  --color-focus-ink: #eafff8;
+  --color-focus-muted: #86a39b;
+
+  --radius-card: 18px;
+  --radius-stage: 26px;
+}
+
+:root {
+  --rt-grad: linear-gradient(100deg, #0d9488 0%, #10b981 52%, #34d399 100%);
+}
+
+html {
+  color-scheme: light;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* tabular figures for all time displays */
+.tabnum {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* respect reduced motion globally for our transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
