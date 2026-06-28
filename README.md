@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# RangeTube
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Free, backendless YouTube **segment looper**: paste a video URL, pick a start/end range, and loop that segment endlessly. No ads, no signup — just the clip and you.
 
-## Available Scripts
+## Stack
 
-In the project directory, you can run:
+Astro (static) · React islands (`@astrojs/react`) · TypeScript (strict) · Tailwind CSS v4 · Vitest + jsdom + Testing Library. Deploys static to **Cloudflare Pages** (`dist/`). No backend.
 
-### `npm start`
+## Requirements
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Node 22** (see `.nvmrc` / `.node-version`) — `nvm use`
+- **pnpm** via Corepack — `corepack enable` (version pinned by `packageManager` in `package.json`)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting started
 
-### `npm test`
+```bash
+pnpm install
+pnpm dev        # dev server at http://localhost:4321
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Scripts
 
-### `npm run build`
+| Command           | What it does                  |
+| ----------------- | ----------------------------- |
+| `pnpm dev`        | Dev server                    |
+| `pnpm build`      | Production build to `dist/`   |
+| `pnpm preview`    | Serve the production build    |
+| `pnpm test`       | Run unit/component tests once |
+| `pnpm test:watch` | Tests in watch mode           |
+| `pnpm typecheck`  | `astro check`                 |
+| `pnpm lint`       | ESLint + Prettier check       |
+| `pnpm format`     | Prettier write                |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Architecture
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Click-to-load facade → real `YT.Player` (`src/lib/youtube/iframeApi.ts`) → `YouTubeSource` adapter (`src/lib/player/youtubeSource.ts`) implementing the source-agnostic `SourcePlayer` interface (`src/lib/player/types.ts`) → `LoopEngine` (`src/lib/player/loopEngine.ts`) drives looping by polling `getCurrentTime()` and `seekTo()`-ing back to the range start. The looper is a single `client:idle` island (`src/components/Looper.tsx`); content pages stay zero-JS. The range slider is `src/components/RangeSlider.tsx` (ARIA multi-thumb). URL parsing lives in `src/lib/youtube/parseVideoId.ts`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Conventions
 
-### `npm run eject`
+- **TDD**: write the failing test first. Pure logic lives in `src/lib/` (unit-tested); UI in `src/components/` (Testing Library).
+- New playback sources implement `SourcePlayer` — don't special-case YouTube in the engine or UI.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+See [`AGENTS.md`](./AGENTS.md) for the full contributor guide, and `docs/` for specs, plans, and research (including the YouTube ToS / legal constraints).

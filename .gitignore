@@ -1,7 +1,5 @@
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 
 # Astro build output
 /dist/
@@ -22,8 +20,7 @@
 .env.production.local
 
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+pnpm-debug.log*
 
 # Design playground scratchpad (never commit)
 .design-lab/
