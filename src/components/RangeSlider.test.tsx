@@ -50,4 +50,16 @@ describe("RangeSlider", () => {
     fireEvent.keyDown(screen.getByRole("slider", { name: /loop start/i }), { key: "Home" });
     expect(onChange).toHaveBeenCalledWith([0, 90]);
   });
+
+  it("enforces a minimum gap between thumbs on keyboard move", () => {
+    const onChange = vi.fn();
+    render(<RangeSlider min={0} max={100} value={[50, 51]} minGap={2} onChange={onChange} />);
+    fireEvent.keyDown(screen.getByRole("slider", { name: /loop start/i }), { key: "ArrowRight" });
+    expect(onChange).not.toHaveBeenCalled(); // would close the gap below 2
+  });
+
+  it("renders a track element exposing the loop fill", () => {
+    render(<RangeSlider min={0} max={100} value={[20, 60]} onChange={() => {}} />);
+    expect(screen.getByTestId("slider-fill")).toBeInTheDocument();
+  });
 });
