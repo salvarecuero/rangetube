@@ -41,4 +41,55 @@ describe("useFocusMode", () => {
     expect(result.current.focus).toBe(false);
     input.remove();
   });
+
+  it("moves focus to the enter target when entering focus mode", () => {
+    const playBtn = document.createElement("button");
+    const focusBtn = document.createElement("button");
+    document.body.append(playBtn, focusBtn);
+    const enterFocusRef = { current: playBtn };
+    const exitFocusRef = { current: focusBtn };
+
+    const { result } = renderHook(() => useFocusMode({ enterFocusRef, exitFocusRef }));
+    act(() => result.current.enter());
+
+    expect(document.activeElement).toBe(playBtn);
+    playBtn.remove();
+    focusBtn.remove();
+  });
+
+  it("returns focus to the exit target when leaving focus mode", () => {
+    const playBtn = document.createElement("button");
+    const focusBtn = document.createElement("button");
+    document.body.append(playBtn, focusBtn);
+    const enterFocusRef = { current: playBtn };
+    const exitFocusRef = { current: focusBtn };
+
+    const { result } = renderHook(() => useFocusMode({ enterFocusRef, exitFocusRef }));
+    act(() => result.current.enter());
+    act(() => result.current.exit());
+
+    expect(document.activeElement).toBe(focusBtn);
+    playBtn.remove();
+    focusBtn.remove();
+  });
+
+  it("does not steal focus on initial mount", () => {
+    const sentinel = document.createElement("input");
+    const playBtn = document.createElement("button");
+    const focusBtn = document.createElement("button");
+    document.body.append(sentinel, playBtn, focusBtn);
+    sentinel.focus();
+
+    renderHook(() =>
+      useFocusMode({
+        enterFocusRef: { current: playBtn },
+        exitFocusRef: { current: focusBtn },
+      }),
+    );
+
+    expect(document.activeElement).toBe(sentinel);
+    sentinel.remove();
+    playBtn.remove();
+    focusBtn.remove();
+  });
 });

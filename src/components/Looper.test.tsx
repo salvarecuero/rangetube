@@ -42,6 +42,19 @@ describe("Looper", () => {
     expect(screen.getByRole("link", { name: /developed with youtube/i })).toBeInTheDocument();
   });
 
+  it("moves focus to play/pause on entering focus mode and back to the focus toggle on exit", async () => {
+    render(<Looper />);
+    await reachPlayingState();
+
+    // Entering focus mode lands keyboard focus on the play/pause control.
+    fireEvent.click(screen.getByRole("button", { name: /focus mode/i }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /pause/i })).toHaveFocus());
+
+    // Esc always exits, returning focus to the focus toggle (a sensible re-entry point).
+    fireEvent.keyDown(document.body, { key: "Escape" });
+    await waitFor(() => expect(screen.getByRole("button", { name: /focus mode/i })).toHaveFocus());
+  });
+
   it("confirms before resetting via the logo while a video is playing", async () => {
     render(<Looper />);
     await reachPlayingState();
