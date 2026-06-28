@@ -48,6 +48,13 @@
 html {
   color-scheme: light;
 }
+
+/* Tailwind v4's preflight no longer sets this; restore the clickable affordance. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+label[for] {
+  cursor: pointer;
+}
 body {
   background: var(--color-bg);
   color: var(--color-ink);
