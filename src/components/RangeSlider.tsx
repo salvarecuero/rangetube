@@ -24,7 +24,18 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function RangeSlider(
-  { min, max, value, step = 1, minGap = 0, onChange, onPreview, onScrubStart, onSeek, formatValueText },
+  {
+    min,
+    max,
+    value,
+    step = 1,
+    minGap = 0,
+    onChange,
+    onPreview,
+    onScrubStart,
+    onSeek,
+    formatValueText,
+  },
   trackRef,
 ) {
   const [start, end] = value;

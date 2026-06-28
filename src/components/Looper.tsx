@@ -8,6 +8,7 @@ import { startPortfolioReady } from "../lib/embed/portfolioEmbed";
 import { formatTime } from "../lib/ui/formatTime";
 import { useFocusMode, isTypingTarget } from "../lib/ui/useFocusMode";
 import { usePlayhead } from "../lib/ui/usePlayhead";
+import type { TimeMode } from "../lib/ui/playhead";
 import { HeroInput } from "./HeroInput";
 import { Logo } from "./Logo";
 import { PlayerStage, type StageError } from "./PlayerStage";
@@ -31,6 +32,7 @@ export function Looper() {
   const [playing, setPlaying] = useState(false);
   const [source, setSource] = useState<YouTubeSource | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [timeMode, setTimeMode] = useState<TimeMode>("video");
 
   const playerHostRef = useRef<HTMLDivElement>(null);
   const keepWatchingRef = useRef<HTMLButtonElement>(null);
@@ -42,7 +44,16 @@ export function Looper() {
   const wasPlaying = useRef(false);
 
   const { focus, toggle, exit } = useFocusMode();
-  usePlayhead(trackRef, source, 0, duration, status === "ready", currentTimeRef);
+  usePlayhead(
+    trackRef,
+    source,
+    0,
+    duration,
+    status === "ready",
+    currentTimeRef,
+    timeMode,
+    range[0],
+  );
 
   useEffect(() => startPortfolioReady(), []);
   useEffect(() => {
@@ -254,7 +265,7 @@ export function Looper() {
 
       {!focus && (
         <header
-          className={`flex justify-center px-5 ${phase === "input" ? "pt-12 sm:pt-16" : "pt-4 sm:pt-5"}`}
+          className={`flex justify-center px-5 transition-all duration-[450ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${phase === "input" ? "pt-12 sm:pt-16" : "pt-4 sm:pt-5"}`}
         >
           <button
             type="button"
@@ -283,7 +294,7 @@ export function Looper() {
         )}
 
         {phase !== "input" && (
-          <div className="flex flex-1 flex-col justify-center gap-3 py-3">
+          <div className="rt-rise flex flex-1 flex-col justify-center gap-3 py-3">
             {!focus && (
               <div className="mx-auto w-full max-w-md">
                 <form
@@ -325,7 +336,7 @@ export function Looper() {
             <div
               className="mx-auto flex w-full flex-col gap-3"
               style={
-                focus ? undefined : { maxWidth: "min(64rem, calc((100dvh - 29rem) * 16 / 9))" }
+                focus ? undefined : { maxWidth: "min(64rem, calc((100dvh - 20rem) * 16 / 9))" }
               }
             >
               {phase === "facade" && videoId && (
@@ -357,6 +368,8 @@ export function Looper() {
                   onPlayPause={playPause}
                   onRestart={restartLoop}
                   onFocus={toggle}
+                  onToggleTimeMode={() => setTimeMode((m) => (m === "video" ? "loop" : "video"))}
+                  timeMode={timeMode}
                   format={fmt}
                   showFocusButton={!focus}
                   variant={focus ? "dark" : "light"}

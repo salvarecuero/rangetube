@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatTime } from "./formatTime";
+import { formatTime, parseTime } from "./formatTime";
 
 describe("formatTime", () => {
   it("formats sub-hour times as m:ss", () => {
@@ -19,5 +19,36 @@ describe("formatTime", () => {
   });
   it("clamps negatives to zero", () => {
     expect(formatTime(-5)).toBe("0:00");
+  });
+});
+
+describe("parseTime", () => {
+  it("parses m:ss into seconds", () => {
+    expect(parseTime("0:00")).toBe(0);
+    expect(parseTime("1:32")).toBe(92);
+    expect(parseTime("9:59")).toBe(599);
+  });
+  it("parses tenths", () => {
+    expect(parseTime("1:32.5")).toBe(92.5);
+    expect(parseTime("0:06.0")).toBe(6);
+  });
+  it("parses h:mm:ss", () => {
+    expect(parseTime("1:00:00")).toBe(3600);
+    expect(parseTime("2:02:05")).toBe(7325);
+  });
+  it("parses a bare seconds number", () => {
+    expect(parseTime("83")).toBe(83);
+    expect(parseTime("83.5")).toBe(83.5);
+  });
+  it("trims surrounding whitespace", () => {
+    expect(parseTime("  1:30  ")).toBe(90);
+  });
+  it("returns null for empty or junk input", () => {
+    expect(parseTime("")).toBeNull();
+    expect(parseTime("   ")).toBeNull();
+    expect(parseTime("abc")).toBeNull();
+    expect(parseTime("1:")).toBeNull();
+    expect(parseTime("1:2:3:4")).toBeNull();
+    expect(parseTime("-5")).toBeNull();
   });
 });

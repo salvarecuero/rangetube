@@ -52,9 +52,7 @@ describe("Looper", () => {
 
     // Confirming returns to the hero input.
     fireEvent.click(screen.getByRole("button", { name: /^leave$/i }));
-    await waitFor(() =>
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.getByPlaceholderText(/youtube link/i)).toBeInTheDocument();
   });
 });
