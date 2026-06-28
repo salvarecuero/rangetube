@@ -3,9 +3,7 @@ import { Play, Pause, RotateCcw, Repeat, Focus, ArrowRightLeft } from "lucide-re
 import { RangeSlider } from "./RangeSlider";
 import { TimeField } from "./TimeField";
 import type { TimeMode } from "../lib/ui/playhead";
-
-/** Smallest allowed gap between A and B (no zero-length loop). */
-const MIN_GAP = 0.5;
+import { MIN_GAP } from "../lib/player/markRange";
 
 export interface ControlDeckProps {
   min: number;
