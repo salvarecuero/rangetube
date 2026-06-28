@@ -31,16 +31,16 @@ pnpm dev        # → http://localhost:4321
 
 ## Scripts
 
-| Command           | What it does                  |
-| ----------------- | ----------------------------- |
-| `pnpm dev`        | Dev server                    |
-| `pnpm build`      | Production build to `dist/`   |
-| `pnpm preview`    | Serve the production build    |
-| `pnpm test`       | Unit/component tests (once)   |
-| `pnpm test:watch` | Tests in watch mode           |
-| `pnpm typecheck`  | `astro check`                 |
-| `pnpm lint`       | ESLint + Prettier check       |
-| `pnpm format`     | Prettier write                |
+| Command           | What it does                |
+| ----------------- | --------------------------- |
+| `pnpm dev`        | Dev server                  |
+| `pnpm build`      | Production build to `dist/` |
+| `pnpm preview`    | Serve the production build  |
+| `pnpm test`       | Unit/component tests (once) |
+| `pnpm test:watch` | Tests in watch mode         |
+| `pnpm typecheck`  | `astro check`               |
+| `pnpm lint`       | ESLint + Prettier check     |
+| `pnpm format`     | Prettier write              |
 
 ## How it's built
 
