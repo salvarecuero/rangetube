@@ -24,20 +24,12 @@ type Status = "idle" | "loading" | "ready" | "error";
 const DEMO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 export function Looper() {
-  const [phase, setPhase] = useState<Phase>(() => {
-    return decodeLoopParams(window.location.search) ? "facade" : "input";
-  });
+  const [phase, setPhase] = useState<Phase>("input");
   const [status, setStatus] = useState<Status>("idle");
-  const [urlInput, setUrlInput] = useState(() => {
-    const decoded = decodeLoopParams(window.location.search);
-    return decoded ? `https://www.youtube.com/watch?v=${decoded.videoId}` : "";
-  });
+  const [urlInput, setUrlInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [stageError, setStageError] = useState<StageError | null>(null);
-  const [videoId, setVideoId] = useState<string | null>(() => {
-    const decoded = decodeLoopParams(window.location.search);
-    return decoded ? decoded.videoId : null;
-  });
+  const [videoId, setVideoId] = useState<string | null>(null);
   const [duration, setDuration] = useState(0);
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [playing, setPlaying] = useState(false);
@@ -46,9 +38,7 @@ export function Looper() {
   const [timeMode, setTimeMode] = useState<TimeMode>("video");
   const [looping, setLooping] = useState(true);
   const [rate, setRate] = useState(1);
-  const [pendingState, setPendingState] = useState<LoopState | null>(() =>
-    decodeLoopParams(window.location.search),
-  );
+  const [pendingState, setPendingState] = useState<LoopState | null>(null);
 
   const playerHostRef = useRef<HTMLDivElement>(null);
   const keepWatchingRef = useRef<HTMLButtonElement>(null);
@@ -85,6 +75,18 @@ export function Looper() {
   );
 
   useEffect(() => startPortfolioReady(), []);
+  // Deep link: read videoId + range + rate from the URL on mount (client-only —
+  // `window` is undefined during Astro's SSR/prerender, so this must not run in
+  // a render-phase initializer). The player still only loads on the facade click.
+  useEffect(() => {
+    const decoded = decodeLoopParams(window.location.search);
+    if (!decoded) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL read on mount
+    setVideoId(decoded.videoId);
+    setPendingState(decoded);
+    setUrlInput(`https://www.youtube.com/watch?v=${decoded.videoId}`);
+    setPhase("facade");
+  }, []);
   useEffect(() => {
     function onKeyUp(e: KeyboardEvent) {
       if (e.key !== " " || !sourceRef.current) return;
