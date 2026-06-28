@@ -4,6 +4,9 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "jsx": "react-jsx",
+    // Keep this as "react" (not "preact"): components use @types/react APIs
+    // (RefObject, TargetedPointerEvent, ...). Runtime is preact/compat via the
+    // package.json react alias. Switching to "preact" reintroduces ~18 type errors.
     "jsxImportSource": "react",
     "types": ["@testing-library/jest-dom"]
   }
