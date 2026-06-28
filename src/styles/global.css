@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
-@import "@fontsource/rammetto-one";
+@import "@fontsource/rammetto-one/latin.css";
 @import "@fontsource-variable/fredoka";
 
 @theme {
