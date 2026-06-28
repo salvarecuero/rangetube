@@ -1,3 +1,5 @@
+import { ClipboardPaste } from "lucide-react";
+
 export interface HeroInputProps {
   value: string;
   onChange: (v: string) => void;
@@ -7,6 +9,15 @@ export interface HeroInputProps {
 }
 
 export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: HeroInputProps) {
+  async function handlePaste() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) onChange(text.trim());
+    } catch {
+      /* clipboard unavailable or denied (e.g. embedded) — user can paste manually */
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-3xl text-center">
       <h2 className="font-display mx-auto mb-4 max-w-[18ch] text-4xl font-bold leading-[1.06] tracking-tight @md:text-5xl">
@@ -15,15 +26,14 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
         of any YouTube video
       </h2>
       <p className="mx-auto mb-7 max-w-[46ch] text-base text-muted">
-        Pick a start and end, and it repeats — endlessly. Built for musicians, language learners and
-        dancers.
+        Pick a start and an end, and it repeats — endlessly.
       </p>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit();
         }}
-        className="mx-auto flex max-w-xl gap-2 rounded-2xl border border-line bg-white p-2 shadow-lg shadow-brand-900/5"
+        className="mx-auto flex max-w-2xl gap-2 rounded-2xl border border-line bg-white p-2 shadow-lg shadow-brand-900/5"
       >
         <label htmlFor="yt-url" className="sr-only">
           YouTube video URL
@@ -36,6 +46,14 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
           placeholder="Paste a YouTube link (or video ID)"
           className="min-w-0 flex-1 bg-transparent px-3 text-[15px] outline-none placeholder:text-brand-700/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 focus-visible:rounded-lg"
         />
+        <button
+          type="button"
+          onClick={handlePaste}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-line px-3.5 py-2.5 text-sm font-semibold text-brand-700 transition hover:border-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+        >
+          <ClipboardPaste className="h-4 w-4" aria-hidden="true" />
+          Paste
+        </button>
         <button
           type="submit"
           className="rounded-xl bg-[image:var(--rt-grad)] px-5 py-2.5 font-semibold text-brand-900 shadow-md shadow-brand-500/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
