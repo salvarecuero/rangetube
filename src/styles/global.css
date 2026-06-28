@@ -1,8 +1,12 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
+@import "@fontsource/rammetto-one";
+@import "@fontsource-variable/fredoka";
 
 @theme {
   --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-display: "Fredoka Variable", system-ui, sans-serif; /* hero headline */
+  --font-logo: "Rammetto One", system-ui; /* logo wordmark */
 
   /* brand teal/emerald (v1-anchored) */
   --color-brand-50: #ecfdf6;
@@ -28,6 +32,10 @@
   --color-focus-bg-2: #0c1b19;
   --color-focus-ink: #eafff8;
   --color-focus-muted: #86a39b;
+
+  /* coral accent — B / loop-end color */
+  --color-coral-500: #e76f51; /* display / brand coral (logo B) — 2.93:1 vs white, decorative/large-text use */
+  --color-coral-600: #d85a3d; /* functional coral — 3.62:1 vs white, meets ≥3:1 for non-text UI */
 
   --radius-card: 18px;
   --radius-stage: 26px;
