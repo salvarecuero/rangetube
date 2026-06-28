@@ -44,6 +44,12 @@ describe("LoopEngine.tick", () => {
     engine.tick();
     expect(seekTo).not.toHaveBeenCalled();
   });
+  it("re-seeks slightly before the end to absorb float drift", () => {
+    const { engine, seekTo } = setup(19.97); // within 0.05 of end
+    engine.setRange({ start: 10, end: 20 });
+    engine.tick();
+    expect(seekTo).toHaveBeenCalledWith(10);
+  });
 });
 
 describe("LoopEngine.start/stop", () => {
