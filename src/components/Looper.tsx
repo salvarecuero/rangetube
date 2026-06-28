@@ -149,7 +149,7 @@ export function Looper() {
   return (
     <div
       data-focus={focus ? "true" : "false"}
-      className="min-h-[60vh] transition-colors duration-500 data-[focus=true]:min-h-screen data-[focus=true]:bg-focus-bg"
+      className="group/shell min-h-[60vh] transition-colors duration-500 data-[focus=true]:min-h-screen data-[focus=true]:bg-focus-bg"
     >
       <div aria-live="polite" className="sr-only">
         {focus ? "Focus mode on" : ""}
@@ -157,7 +157,7 @@ export function Looper() {
         {status === "ready" ? `Looping ${fmt(range[0])} to ${fmt(range[1])}` : ""}
       </div>
 
-      <section className="mx-auto flex max-w-3xl flex-col gap-6 p-4">
+      <section className="mx-auto flex max-w-3xl flex-col gap-6 p-4 transition-all duration-500 group-data-[focus=true]/shell:min-h-screen group-data-[focus=true]/shell:max-w-5xl group-data-[focus=true]/shell:justify-center">
         {phase === "input" && (
           <HeroInput
             value={urlInput}
@@ -200,6 +200,7 @@ export function Looper() {
             onFocus={toggle}
             format={fmt}
             showFocusButton={!focus}
+            variant={focus ? "dark" : "light"}
           />
         )}
 
