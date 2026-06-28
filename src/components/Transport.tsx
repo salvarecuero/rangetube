@@ -37,6 +37,7 @@ export function Transport({
         )}
       </button>
       <span
+        role="img"
         aria-label="Loop on"
         title="Loop on"
         className={`${iconBtn} cursor-default text-brand-600`}

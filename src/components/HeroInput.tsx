@@ -12,7 +12,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
       <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-line bg-white/70 px-3.5 py-1.5 text-xs font-semibold text-brand-700">
         No ads · no signup · just the clip and you
       </span>
-      <h2 className="mx-auto mb-4 max-w-[14ch] text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+      <h2 className="mx-auto mb-4 max-w-[14ch] text-4xl font-extrabold leading-[1.05] tracking-tight @md:text-5xl">
         Loop the{" "}
         <span className="bg-[image:var(--rt-grad)] bg-clip-text text-transparent">exact part</span>{" "}
         of any video. Endlessly.
