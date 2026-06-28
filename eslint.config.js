@@ -5,7 +5,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: ["dist/", ".astro/", "node_modules/", ".design-lab/"] },
+  { ignores: ["dist/", ".astro/", ".wrangler/", "node_modules/", ".design-lab/"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   // react-hooks v7 ships proper flat configs under configs.flat
