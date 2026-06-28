@@ -1,0 +1,101 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { HOW_TOS } from "../../content/howTos";
+import type { HowTo } from "../../content/howTos";
+import { USE_CASES } from "../../content/useCases";
+import { howTo, breadcrumbList } from "../../lib/seo/schema";
+
+export function getStaticPaths() {
+  return HOW_TOS.map((h) => ({ params: { slug: h.slug }, props: { h } }));
+}
+
+interface Props {
+  h: HowTo;
+}
+
+const { h } = Astro.props;
+const siblings = HOW_TOS.filter((o) => o.slug !== h.slug);
+const related = USE_CASES.filter((u) => h.relatedUseCases.includes(u.slug));
+const jsonLd = [
+  howTo({ name: h.h1, description: h.metaDescription, steps: h.steps }),
+  breadcrumbList(
+    [
+      { name: "Home", path: "/" },
+      { name: h.navLabel, path: `/how-to/${h.slug}/` },
+    ],
+    Astro.site!,
+  ),
+];
+
+const linkClass =
+  "text-brand-700 underline hover:text-brand-900 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600";
+---
+
+<BaseLayout title={h.metaTitle} description={h.metaDescription} jsonLd={jsonLd}>
+  <main class="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
+    <h1 class="font-display text-3xl font-bold text-ink sm:text-4xl">{h.h1}</h1>
+    <p class="mt-3 text-lg text-muted">{h.intro}</p>
+
+    <a
+      href="/"
+      class="mt-6 inline-flex items-center gap-1 rounded-card bg-brand-700 px-5 py-3 font-semibold text-white hover:bg-brand-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+    >
+      Try it now <span aria-hidden="true">→</span>
+    </a>
+
+    <section class="mt-12" aria-labelledby="howto-steps">
+      <h2 id="howto-steps" class="text-xl font-semibold text-ink">Steps</h2>
+      <ol class="mt-4 list-decimal space-y-3 pl-6 text-muted">
+        {
+          h.steps.map((s) => (
+            <li>
+              <span class="font-medium text-ink">{s.name}.</span> {s.text}
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {
+      h.tips && h.tips.length > 0 && (
+        <section class="mt-12" aria-labelledby="howto-tips">
+          <h2 id="howto-tips" class="text-xl font-semibold text-ink">
+            Tips
+          </h2>
+          <ul class="mt-4 list-disc space-y-2 pl-6 text-muted">
+            {h.tips.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="mt-12 border-t border-line pt-6" aria-labelledby="howto-related">
+      <h2 id="howto-related" class="text-base font-semibold text-ink">Related</h2>
+      <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-muted">
+        {
+          siblings.map((g) => (
+            <li>
+              <a class={linkClass} href={`/how-to/${g.slug}`}>
+                {g.navLabel}
+              </a>
+            </li>
+          ))
+        }
+        {
+          related.map((u) => (
+            <li>
+              <a class={linkClass} href={`/for/${u.slug}`}>
+                For {u.audience.toLowerCase()}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a class={linkClass} href="/">Open the full looper</a>
+        </li>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
