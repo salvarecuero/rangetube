@@ -4,16 +4,16 @@ RangeTube is a free, backendless YouTube **segment looper**: paste a video URL, 
 
 ## Stack
 
-Astro (static) · React islands (`@astrojs/react`) · TypeScript (strict) · Tailwind CSS v4 · Vitest + jsdom + Testing Library. Deploys static to **Cloudflare Pages** (`dist/`). No backend. Node 22 (`.nvmrc` / `.node-version`).
+Astro (static) · React islands (`@astrojs/react`) · TypeScript (strict) · Tailwind CSS v4 · Vitest + jsdom + Testing Library. Deploys static to **Cloudflare Pages** (`dist/`). No backend. Node 22 (`.nvmrc` / `.node-version`). Package manager: **pnpm** (pinned via `packageManager` in `package.json`; enable with `corepack enable`).
 
 ## Commands
 
-- `npm run dev` — dev server
-- `npm run build` — production build to `dist/`
-- `npm run preview` — serve the build
-- `npm test` — run unit/component tests once
-- `npm run test:watch` — watch mode
-- `npm run typecheck` — `astro check`
+- `pnpm dev` — dev server
+- `pnpm build` — production build to `dist/`
+- `pnpm preview` — serve the build
+- `pnpm test` — run unit/component tests once
+- `pnpm test:watch` — watch mode
+- `pnpm typecheck` — `astro check`
 
 ## Architecture (the spine)
 
