@@ -1,21 +1,32 @@
-# RangeTube
+<div align="center">
 
-Free, backendless YouTube **segment looper**: paste a video URL, pick a start/end range, and loop that segment endlessly. No ads, no signup — just the clip and you.
+<img src=".github/assets/banner.svg" alt="RangeTube" width="560" />
 
-## Stack
+<p>
+  <strong>Free, backendless YouTube segment looper.</strong><br />
+  Paste a video URL, pick a start/end range, loop that clip endlessly.<br />
+  No ads. No signup. Just the clip and you.
+</p>
 
-Astro (static) · React islands (`@astrojs/react`) · TypeScript (strict) · Tailwind CSS v4 · Vitest + jsdom + Testing Library. Deploys static to **Cloudflare Pages** (`dist/`). No backend.
+<p>
+  <img alt="Astro" src="https://img.shields.io/badge/Astro-BC52EE?style=flat-square&logo=astro&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img alt="Tailwind CSS v4" src="https://img.shields.io/badge/Tailwind_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
+  <img alt="Vitest" src="https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white" />
+  <img alt="Cloudflare Pages" src="https://img.shields.io/badge/Cloudflare_Pages-F38020?style=flat-square&logo=cloudflare&logoColor=white" />
+</p>
 
-## Requirements
+</div>
 
-- **Node 22** (see `.nvmrc` / `.node-version`) — `nvm use`
-- **pnpm** via Corepack — `corepack enable` (version pinned by `packageManager` in `package.json`)
+---
 
-## Getting started
+## Quick start
+
+> **Node 22** (`nvm use`) · **pnpm** via Corepack (`corepack enable`). Versions are pinned in `package.json`.
 
 ```bash
 pnpm install
-pnpm dev        # dev server at http://localhost:4321
+pnpm dev        # → http://localhost:4321
 ```
 
 ## Scripts
@@ -25,19 +36,27 @@ pnpm dev        # dev server at http://localhost:4321
 | `pnpm dev`        | Dev server                    |
 | `pnpm build`      | Production build to `dist/`   |
 | `pnpm preview`    | Serve the production build    |
-| `pnpm test`       | Run unit/component tests once |
+| `pnpm test`       | Unit/component tests (once)   |
 | `pnpm test:watch` | Tests in watch mode           |
 | `pnpm typecheck`  | `astro check`                 |
 | `pnpm lint`       | ESLint + Prettier check       |
 | `pnpm format`     | Prettier write                |
 
-## Architecture
+## How it's built
 
-Click-to-load facade → real `YT.Player` (`src/lib/youtube/iframeApi.ts`) → `YouTubeSource` adapter (`src/lib/player/youtubeSource.ts`) implementing the source-agnostic `SourcePlayer` interface (`src/lib/player/types.ts`) → `LoopEngine` (`src/lib/player/loopEngine.ts`) drives looping by polling `getCurrentTime()` and `seekTo()`-ing back to the range start. The looper is a single `client:idle` island (`src/components/Looper.tsx`); content pages stay zero-JS. The range slider is `src/components/RangeSlider.tsx` (ARIA multi-thumb). URL parsing lives in `src/lib/youtube/parseVideoId.ts`.
+**Astro** (static) with **Preact** islands · **TypeScript** (strict) · **Tailwind CSS v4** · **Vitest** + Testing Library. Ships zero-JS content pages and deploys static to **Cloudflare Pages**. No backend.
 
-## Conventions
+The playback spine is source-agnostic:
 
-- **TDD**: write the failing test first. Pure logic lives in `src/lib/` (unit-tested); UI in `src/components/` (Testing Library).
-- New playback sources implement `SourcePlayer` — don't special-case YouTube in the engine or UI.
+```
+click-to-load facade  →  YT.Player  →  YouTubeSource ──┐
+                                                       ├─ SourcePlayer
+                       LoopEngine  ←──────────────────┘
+              polls getCurrentTime(), seekTo()s back to range start
+```
 
-See [`AGENTS.md`](./AGENTS.md) for the full contributor guide, and `docs/` for specs, plans, and research (including the YouTube ToS / legal constraints).
+The looper is a single `client:idle` island (`src/components/Looper.tsx`); content pages stay zero-JS. Pure logic lives in `src/lib/`, UI in `src/components/`. New playback sources implement `SourcePlayer`, so the engine and UI never special-case YouTube.
+
+## Contributing
+
+TDD throughout: write the failing test first. See **[`AGENTS.md`](./AGENTS.md)** for the agent and project instructions.
