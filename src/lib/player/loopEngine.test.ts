@@ -55,7 +55,7 @@ describe("LoopEngine.start/stop", () => {
       return 1;
     });
     const cancel = vi.fn();
-    let t = 20;
+    const t = 20;
     const engine = new LoopEngine({
       getCurrentTime: () => t,
       seekTo,
