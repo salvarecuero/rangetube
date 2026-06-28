@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/preact";
 import { createRef } from "react";
 import { ControlDeck } from "./ControlDeck";
@@ -29,6 +29,11 @@ function props(over: Partial<React.ComponentProps<typeof ControlDeck>> = {}) {
 }
 
 describe("ControlDeck", () => {
+  const originalClipboard = navigator.clipboard;
+  afterEach(() => {
+    Object.assign(navigator, { clipboard: originalClipboard });
+  });
+
   it("renders the slider, play, editable A/B fields, restart and focus", () => {
     render(<ControlDeck {...props()} />);
     expect(screen.getByRole("group", { name: /loop range/i })).toBeInTheDocument();

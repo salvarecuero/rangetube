@@ -24,7 +24,7 @@ export function SpeedControl({ rate, onRate, dark = false }: SpeedControlProps) 
             aria-label={`${preset}× speed`}
             aria-pressed={active}
             onClick={() => onRate(preset)}
-            className={`min-w-[2.5rem] rounded-lg px-2 py-1.5 text-xs font-semibold tabular-nums transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+            className={`min-w-[2.5rem] min-h-11 rounded-lg px-2 py-1.5 text-xs font-semibold tabular-nums transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
               active
                 ? dark
                   ? "bg-brand-500/20 text-brand-300"
