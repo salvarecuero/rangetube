@@ -161,12 +161,12 @@ export function Looper() {
       </div>
 
       {!focus && (
-        <header className="mx-auto flex w-full max-w-5xl justify-center px-5 pb-2 pt-10">
+        <header className="mx-auto flex w-full max-w-5xl justify-center px-5 pb-0 pt-14">
           <Logo />
         </header>
       )}
 
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-6 px-5 py-6 transition-all duration-500 group-data-[focus=true]/shell:max-w-6xl">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-start gap-6 px-5 pb-6 pt-6 transition-all duration-500 group-data-[focus=true]/shell:justify-center group-data-[focus=true]/shell:max-w-6xl">
         {phase === "input" && (
           <HeroInput
             value={urlInput}
