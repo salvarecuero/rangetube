@@ -6,15 +6,9 @@ import { LoopEngine } from "../lib/player/loopEngine";
 import { startPortfolioReady } from "../lib/embed/portfolioEmbed";
 import { YouTubeFacade } from "./YouTubeFacade";
 import { RangeSlider } from "./RangeSlider";
+import { formatTime } from "../lib/ui/formatTime";
 
 type Phase = "input" | "facade" | "playing";
-
-function formatTime(totalSeconds: number): string {
-  const s = Math.max(0, Math.floor(totalSeconds));
-  const mm = String(Math.floor(s / 60)).padStart(2, "0");
-  const ss = String(s % 60).padStart(2, "0");
-  return `${mm}:${ss}`;
-}
 
 export function Looper() {
   const [phase, setPhase] = useState<Phase>("input");
