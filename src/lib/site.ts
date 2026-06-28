@@ -10,3 +10,11 @@ export const FOOTER_LINKS = [
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
 ] as const;
+
+/** Footer "Made for" row targets. Must cover exactly the slugs in src/content/useCases.ts. */
+export const USE_CASE_LINKS = [
+  { href: "/for/musicians", label: "Musicians" },
+  { href: "/for/language-learners", label: "Language learners" },
+  { href: "/for/dancers", label: "Dancers" },
+  { href: "/for/students", label: "Students" },
+] as const;
