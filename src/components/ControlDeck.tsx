@@ -113,7 +113,7 @@ export function ControlDeck({
   // Cluster button styling; `active` is the pressed-toggle look (loop on / focus on).
   const clusterBtn = (active: boolean) => {
     const base =
-      "grid h-10 w-10 place-items-center rounded-[14px] border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500";
+      "grid h-9 w-9 place-items-center rounded-[14px] border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500";
     if (active) {
       return `${base} ${dark ? "border-brand-400/50 bg-brand-500/20 text-brand-300" : "border-brand-500 bg-brand-50 text-brand-700"}`;
     }
@@ -128,129 +128,101 @@ export function ControlDeck({
           : "border-line bg-surface shadow-xl shadow-brand-900/5"
       }`}
     >
-      <div className="flex flex-wrap items-center justify-center gap-3 @2xl:flex-nowrap @2xl:gap-4">
-        {/* Play — far left on wide, joins the button row on narrow */}
-        <button
-          ref={playPauseRef}
-          type="button"
-          onClick={onPlayPause}
-          aria-label={playing ? "Pause" : "Play"}
-          className="order-2 grid h-[50px] w-[50px] shrink-0 place-items-center rounded-full bg-[image:var(--rt-grad)] text-brand-900 shadow-lg shadow-brand-500/35 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 @2xl:order-1"
-        >
-          {playing ? (
-            <Pause className="h-6 w-6" aria-hidden="true" />
-          ) : (
-            <Play className="h-6 w-6 translate-x-px" aria-hidden="true" />
-          )}
-        </button>
+      {/* Row 1 — timeline, full width */}
+      <RangeSlider
+        ref={trackRef}
+        min={min}
+        max={max}
+        value={range}
+        minGap={MIN_GAP}
+        onChange={onCommit}
+        onPreview={onPreview}
+        onScrubStart={onScrubStart}
+        onSeek={onSeek}
+        formatValueText={format}
+      />
 
-        {/* Slider + A | current | B */}
-        <div className="order-1 w-full min-w-0 @2xl:order-2 @2xl:flex-1">
-          <RangeSlider
-            ref={trackRef}
+      {/* Row 2 — controls: left group hugs the left, B field flushes right */}
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        {/* Left group: play · A · mark-in · readout */}
+        <div className="flex items-center gap-2">
+          <button
+            ref={playPauseRef}
+            type="button"
+            onClick={onPlayPause}
+            aria-label={playing ? "Pause" : "Play"}
+            className="grid h-[50px] w-[50px] shrink-0 place-items-center rounded-full bg-[image:var(--rt-grad)] text-brand-900 shadow-lg shadow-brand-500/35 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+          >
+            {playing ? (
+              <Pause className="h-6 w-6" aria-hidden="true" />
+            ) : (
+              <Play className="h-6 w-6 translate-x-px" aria-hidden="true" />
+            )}
+          </button>
+
+          <TimeField
+            label="A"
+            ariaLabel="Loop start"
+            seconds={range[0]}
             min={min}
-            max={max}
-            value={range}
-            minGap={MIN_GAP}
-            onChange={onCommit}
-            onPreview={onPreview}
-            onScrubStart={onScrubStart}
-            onSeek={onSeek}
-            formatValueText={format}
+            max={range[1] - MIN_GAP}
+            format={format}
+            onCommit={(s) => onCommit([s, range[1]])}
+            variant="start"
+            dark={dark}
           />
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <TimeField
-              label="A"
-              ariaLabel="Loop start"
-              seconds={range[0]}
-              min={min}
-              max={range[1] - MIN_GAP}
-              format={format}
-              onCommit={(s) => onCommit([s, range[1]])}
-              variant="start"
-              dark={dark}
-            />
+
+          {onMarkIn && (
             <button
               type="button"
-              onClick={onToggleTimeMode}
-              aria-label="Switch time readout"
-              title="Switch between time in video and time in loop"
-              className={`flex flex-col items-center gap-0.5 rounded-lg px-2.5 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-                timeMode === "loop"
-                  ? dark
-                    ? "bg-brand-500/15"
-                    : "bg-brand-50"
-                  : "hover:bg-brand-500/10"
+              onClick={onMarkIn}
+              title="Mark in — set A to current time ([)"
+              className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+                dark
+                  ? "border-white/12 bg-white/[0.06] text-brand-300 hover:border-brand-400"
+                  : "border-line bg-white text-brand-700 hover:border-brand-500"
+              }`}
+              aria-label="Mark in (set loop start to current time)"
+            >
+              <ArrowLeftToLine className="h-3.5 w-3.5" aria-hidden="true" />A
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onToggleTimeMode}
+            aria-label="Switch time readout"
+            title="Switch between time in video and time in loop"
+            className={`flex flex-col items-center gap-0.5 rounded-lg px-2.5 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+              timeMode === "loop"
+                ? dark
+                  ? "bg-brand-500/15"
+                  : "bg-brand-50"
+                : "hover:bg-brand-500/10"
+            }`}
+          >
+            <span
+              className={`tabnum text-[13px] font-bold ${dark ? "text-focus-ink" : "text-ink"}`}
+            >
+              <span ref={currentTimeRef} aria-label="Current time">
+                {initialNumerator}
+              </span>
+              <span className={dark ? "text-focus-muted" : "text-muted"}> / </span>
+              <span className={dark ? "text-focus-muted" : "text-muted"}>{denom}</span>
+            </span>
+            <span
+              className={`flex items-center gap-1 text-[9.5px] font-semibold uppercase tracking-wider ${
+                dark ? "text-brand-300" : "text-brand-700"
               }`}
             >
-              <span
-                className={`tabnum text-[13px] font-bold ${dark ? "text-focus-ink" : "text-ink"}`}
-              >
-                <span ref={currentTimeRef} aria-label="Current time">
-                  {initialNumerator}
-                </span>
-                <span className={dark ? "text-focus-muted" : "text-muted"}> / </span>
-                <span className={dark ? "text-focus-muted" : "text-muted"}>{denom}</span>
-              </span>
-              <span
-                className={`flex items-center gap-1 text-[9.5px] font-semibold uppercase tracking-wider ${
-                  dark ? "text-brand-300" : "text-brand-700"
-                }`}
-              >
-                <ArrowRightLeft className="h-2.5 w-2.5 opacity-70" aria-hidden="true" />
-                {modeLabel}
-              </span>
-            </button>
-            <TimeField
-              label="B"
-              ariaLabel="Loop end"
-              seconds={range[1]}
-              min={range[0] + MIN_GAP}
-              max={max}
-              format={format}
-              onCommit={(s) => onCommit([range[0], s])}
-              variant="end"
-              dark={dark}
-            />
-          </div>
-          {(onMarkIn || onMarkOut) && (
-            <div className="mt-1.5 flex items-center justify-center gap-2">
-              {onMarkIn && (
-                <button
-                  type="button"
-                  onClick={onMarkIn}
-                  title="Mark in — set A to current time ([)"
-                  className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-                    dark
-                      ? "border-white/12 bg-white/[0.06] text-brand-300 hover:border-brand-400"
-                      : "border-line bg-white text-brand-700 hover:border-brand-500"
-                  }`}
-                  aria-label="Mark in (set loop start to current time)"
-                >
-                  <ArrowLeftToLine className="h-3.5 w-3.5" aria-hidden="true" />A
-                </button>
-              )}
-              {onMarkOut && (
-                <button
-                  type="button"
-                  onClick={onMarkOut}
-                  title="Mark out — set B to current time (])"
-                  className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-                    dark
-                      ? "border-white/12 bg-white/[0.06] text-coral-500 hover:border-coral-500"
-                      : "border-line bg-white text-coral-600 hover:border-coral-600"
-                  }`}
-                  aria-label="Mark out (set loop end to current time)"
-                >
-                  B<ArrowRightToLine className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-              )}
-            </div>
-          )}
+              <ArrowRightLeft className="h-2.5 w-2.5 opacity-70" aria-hidden="true" />
+              {modeLabel}
+            </span>
+          </button>
         </div>
 
-        {/* Restart · loop toggle · focus toggle */}
-        <div className="order-3 flex shrink-0 items-center gap-2">
+        {/* Right group: speed · restart · loop · focus · share · mark-out · B */}
+        <div className="flex items-center gap-2">
           {canSetSpeed && onRate && <SpeedControl rate={rate} onRate={onRate} dark={dark} />}
           <button
             type="button"
@@ -314,6 +286,32 @@ export function ControlDeck({
               )}
             </span>
           )}
+          {onMarkOut && (
+            <button
+              type="button"
+              onClick={onMarkOut}
+              title="Mark out — set B to current time (])"
+              className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+                dark
+                  ? "border-white/12 bg-white/[0.06] text-coral-500 hover:border-coral-500"
+                  : "border-line bg-white text-coral-600 hover:border-coral-600"
+              }`}
+              aria-label="Mark out (set loop end to current time)"
+            >
+              B<ArrowRightToLine className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          )}
+          <TimeField
+            label="B"
+            ariaLabel="Loop end"
+            seconds={range[1]}
+            min={range[0] + MIN_GAP}
+            max={max}
+            format={format}
+            onCommit={(s) => onCommit([range[0], s])}
+            variant="end"
+            dark={dark}
+          />
         </div>
       </div>
     </div>
