@@ -27,7 +27,7 @@ Click-to-load facade → real `YT.Player` (via `src/lib/youtube/iframeApi.ts`) �
 - Avoid the deprecated namespace-qualified event types from the React-compat layer (`React.FormEvent` etc.); prefer inline-inferred handler events or named imports.
 - Frequent, conventional commits.
 
-## YouTube ToS / legal do-NOT list (see docs/v2/research/01, 06)
+## YouTube ToS / legal do-NOT list
 
 - Do **not** strip or obscure the player; keep play/pause/seek/captions/fullscreen; viewport ≥200×200.
 - Keep the **"Developed with YouTube"** attribution near the player; keep the non-affiliation disclaimer.
@@ -35,8 +35,6 @@ Click-to-load facade → real `YT.Player` (via `src/lib/youtube/iframeApi.ts`) �
 - Default to `youtube-nocookie.com`; the player loads only after the user clicks (consent boundary).
 - Preserve the portfolio embed `frame-ancestors` CSP in `public/_headers` (Cloudflare Pages serves it).
 
-## Reference docs
+## Durable project context
 
-- Master spec: `docs/superpowers/specs/2026-06-27-rangetube-v2-design.md`
-- Plan: `docs/superpowers/plans/2026-06-27-rangetube-v2-foundation.md`
-- Research: `docs/v2/research/`
+Historical planning and research files are intentionally not kept in Git. Keep durable product, compliance, performance, and positioning decisions summarized in `PROJECT_CONTEXT.md`.
