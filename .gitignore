@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 # Design playground scratchpad (never commit)
 .design-lab/
+
+# Local planning/research scratchpad. Durable context belongs in PROJECT_CONTEXT.md.
+/docs/
