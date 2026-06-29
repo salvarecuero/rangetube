@@ -4,7 +4,7 @@ RangeTube is a free, backendless YouTube **segment looper**: paste a video URL, 
 
 ## Stack
 
-Astro (static) · React islands (`@astrojs/react`) · TypeScript (strict) · Tailwind CSS v4 · Vitest + jsdom + Testing Library. Deploys static to **Cloudflare Pages** (`dist/`). No backend. Node 22 (`.nvmrc` / `.node-version`). Package manager: **pnpm** (pinned via `packageManager` in `package.json`; enable with `corepack enable`).
+Astro (static) · Preact islands (`@astrojs/preact`, with `@preact/compat` aliasing `react`/`react-dom`) · TypeScript (strict) · Tailwind CSS v4 · Vitest + jsdom + Testing Library. Deploys static to **Cloudflare Pages** (`dist/`). No backend. Node 22 (`.nvmrc` / `.node-version`). Package manager: **pnpm** (pinned via `packageManager` in `package.json`; enable with `corepack enable`).
 
 ## Commands
 
@@ -24,7 +24,7 @@ Click-to-load facade → real `YT.Player` (via `src/lib/youtube/iframeApi.ts`) �
 - TDD: write the failing test first; pure logic (`src/lib/`) is unit-tested, components use Testing Library.
 - Keep files focused and small; pure logic in `src/lib/`, UI in `src/components/`.
 - New playback sources implement `SourcePlayer` — do not special-case YouTube in the engine or UI.
-- Avoid the deprecated namespace-qualified React event types (`React.FormEvent` etc.); prefer inline-inferred handler events or named imports.
+- Avoid the deprecated namespace-qualified event types from the React-compat layer (`React.FormEvent` etc.); prefer inline-inferred handler events or named imports.
 - Frequent, conventional commits.
 
 ## YouTube ToS / legal do-NOT list (see docs/v2/research/01, 06)
