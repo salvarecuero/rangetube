@@ -101,7 +101,7 @@ describe("Looper", () => {
 
   it("changes playback rate via the speed control", async () => {
     const { source } = await renderPlaying();
-    fireEvent.click(screen.getByRole("button", { name: /1\.25× speed/i }));
+    fireEvent.click(screen.getByRole("button", { name: /faster/i }));
     expect(source.setPlaybackRate).toHaveBeenCalledWith(1.25);
   });
 
