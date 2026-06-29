@@ -145,7 +145,7 @@ export function ControlDeck({
       {/* Row 2 — controls: left group hugs the left, B field flushes right */}
       <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         {/* Left group: play · A · mark-in · readout */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 gap-y-1.5">
           <button
             ref={playPauseRef}
             type="button"
@@ -222,7 +222,7 @@ export function ControlDeck({
         </div>
 
         {/* Right group: speed · restart · loop · focus · share · mark-out · B */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 gap-y-1.5">
           {canSetSpeed && onRate && <SpeedControl rate={rate} onRate={onRate} dark={dark} />}
           <button
             type="button"
