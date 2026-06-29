@@ -20,8 +20,9 @@ import { MIN_GAP } from "../lib/player/markRange";
 /** Below this viewport width the deck uses the stacked mobile arrangement.
  *  Viewport-based is sufficient: the deck only becomes narrow at narrow
  *  viewports (its width is otherwise capped by the stage's height-based
- *  maxWidth, which is still wide enough for the desktop cluster). Tune in
- *  visual verification. */
+ *  maxWidth, which is still wide enough for the desktop cluster). 600px was
+ *  confirmed in visual verification — the desktop cluster fits without
+ *  wrapping above it and the mobile row has no overflow below it. */
 const COMPACT_QUERY = "(max-width: 600px)";
 
 export interface ControlDeckProps {
