@@ -124,8 +124,8 @@ describe("ControlDeck", () => {
 
     rerender(<ControlDeck {...props({ canSetSpeed: true, rate: 1, onRate })} />);
     expect(screen.getByRole("group", { name: /playback speed/i })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /1\.5/ }));
-    expect(onRate).toHaveBeenCalledWith(1.5);
+    fireEvent.click(screen.getByRole("button", { name: /faster/i }));
+    expect(onRate).toHaveBeenCalledWith(1.25);
   });
 
   it("renders Mark-In / Mark-Out buttons that call their handlers", () => {

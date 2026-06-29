@@ -1,4 +1,5 @@
-import { SPEED_PRESETS } from "../lib/share/loopState";
+import { Minus, Plus } from "lucide-react";
+import { stepSpeed, isSpeedAtEnd } from "../lib/ui/speed";
 
 export interface SpeedControlProps {
   rate: number;
@@ -7,6 +8,10 @@ export interface SpeedControlProps {
 }
 
 export function SpeedControl({ rate, onRate, dark = false }: SpeedControlProps) {
+  const stepBtn = `grid h-9 w-9 place-items-center rounded-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-40 ${
+    dark ? "text-focus-muted enabled:hover:text-focus-ink" : "text-muted enabled:hover:text-ink"
+  }`;
+
   return (
     <div
       role="group"
@@ -15,29 +20,32 @@ export function SpeedControl({ rate, onRate, dark = false }: SpeedControlProps) 
         dark ? "border-white/12 bg-white/[0.06]" : "border-line bg-white"
       }`}
     >
-      {SPEED_PRESETS.map((preset) => {
-        const active = preset === rate;
-        return (
-          <button
-            key={preset}
-            type="button"
-            aria-label={`${preset}× speed`}
-            aria-pressed={active}
-            onClick={() => onRate(preset)}
-            className={`min-w-[2.5rem] min-h-11 rounded-lg px-2 py-1.5 text-xs font-semibold tabular-nums transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-              active
-                ? dark
-                  ? "bg-brand-500/20 text-brand-300"
-                  : "bg-brand-50 text-brand-700"
-                : dark
-                  ? "text-focus-muted hover:text-focus-ink"
-                  : "text-muted hover:text-ink"
-            }`}
-          >
-            {preset}×
-          </button>
-        );
-      })}
+      <button
+        type="button"
+        aria-label="Slower"
+        disabled={isSpeedAtEnd(rate, -1)}
+        onClick={() => onRate(stepSpeed(rate, -1))}
+        className={stepBtn}
+      >
+        <Minus className="h-4 w-4" aria-hidden="true" />
+      </button>
+      <span
+        aria-live="polite"
+        className={`min-w-[2.75rem] text-center text-xs font-semibold tabular-nums ${
+          dark ? "text-brand-300" : "text-brand-700"
+        }`}
+      >
+        {rate}×
+      </span>
+      <button
+        type="button"
+        aria-label="Faster"
+        disabled={isSpeedAtEnd(rate, 1)}
+        onClick={() => onRate(stepSpeed(rate, 1))}
+        className={stepBtn}
+      >
+        <Plus className="h-4 w-4" aria-hidden="true" />
+      </button>
     </div>
   );
 }
