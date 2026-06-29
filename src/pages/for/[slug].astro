@@ -1,0 +1,106 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Looper } from "../../components/Looper";
+import { USE_CASES } from "../../content/useCases";
+import type { UseCase } from "../../content/useCases";
+import { HOW_TOS } from "../../content/howTos";
+import { faqPage, breadcrumbList } from "../../lib/seo/schema";
+
+export function getStaticPaths() {
+  return USE_CASES.map((uc) => ({ params: { slug: uc.slug }, props: { uc } }));
+}
+
+interface Props {
+  uc: UseCase;
+}
+
+const { uc } = Astro.props;
+const others = USE_CASES.filter((o) => o.slug !== uc.slug);
+const relatedGuides = HOW_TOS.filter((g) => uc.relatedHowTos.includes(g.slug));
+const linkClass =
+  "text-brand-700 underline hover:text-brand-900 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600";
+const jsonLd = [
+  faqPage(uc.faq),
+  breadcrumbList(
+    [
+      { name: "Home", path: "/" },
+      { name: uc.audience, path: `/for/${uc.slug}/` },
+    ],
+    Astro.site!,
+  ),
+];
+---
+
+<BaseLayout title={uc.metaTitle} description={uc.metaDescription} jsonLd={jsonLd}>
+  <main class="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
+    <h1 class="font-display text-3xl font-bold text-ink sm:text-4xl">{uc.h1}</h1>
+    <p class="mt-3 text-lg text-muted">{uc.subhead}</p>
+
+    <div class="mt-8">
+      <Looper client:idle />
+    </div>
+
+    <section class="mt-12" aria-labelledby="uc-why">
+      <h2 id="uc-why" class="text-xl font-semibold text-ink">Why RangeTube for {uc.audience.toLowerCase()}</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6 text-muted">
+        {uc.whyBullets.map((b) => <li>{b}</li>)}
+      </ul>
+    </section>
+
+    <section class="mt-12" aria-labelledby="uc-how">
+      <h2 id="uc-how" class="text-xl font-semibold text-ink">How to loop a section for {uc.audience.toLowerCase()}</h2>
+      <ol class="mt-4 list-decimal space-y-2 pl-6 text-muted">
+        {uc.steps.map((s) => <li>{s}</li>)}
+      </ol>
+    </section>
+
+    <section class="mt-12" aria-labelledby="uc-faq">
+      <h2 id="uc-faq" class="text-xl font-semibold text-ink">Frequently asked questions</h2>
+      <dl class="mt-4 space-y-6">
+        {
+          uc.faq.map((f) => (
+            <div>
+              <dt class="font-medium text-ink">{f.q}</dt>
+              <dd class="mt-1 text-muted">{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    {
+      relatedGuides.length > 0 && (
+        <section class="mt-12" aria-labelledby="uc-guides">
+          <h2 id="uc-guides" class="text-base font-semibold text-ink">
+            Related guides
+          </h2>
+          <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-muted">
+            {relatedGuides.map((g) => (
+              <li>
+                <a class={linkClass} href={`/how-to/${g.slug}`}>
+                  {g.navLabel}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="mt-12 border-t border-line pt-6" aria-labelledby="uc-also">
+      <h2 id="uc-also" class="text-base font-semibold text-ink">Also made for</h2>
+      <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-muted">
+        {others.map((o) => (
+          <li>
+            <a class={linkClass} href={`/for/${o.slug}`}>
+              {o.audience}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a class={linkClass} href="/">Open the full looper</a>
+        </li>
+      </ul>
+    </section>
+  </main>
+</BaseLayout>

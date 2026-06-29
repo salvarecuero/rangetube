@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource/rammetto-one/latin.css";
+@import "@fontsource-variable/fredoka";
+
+@theme {
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-display: "Fredoka Variable", system-ui, sans-serif; /* hero headline */
+  --font-logo: "Rammetto One", system-ui; /* logo wordmark */
+
+  /* brand teal/emerald (v1-anchored) */
+  --color-brand-50: #ecfdf6;
+  --color-brand-100: #d1faec;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10a599;
+  --color-brand-600: #0d8e83;
+  --color-brand-700: #0f766e;
+  --color-brand-800: #0b4f47;
+  --color-brand-900: #06201c;
+
+  /* surfaces (light airy) */
+  --color-surface: #ffffff;
+  --color-bg: #eef5f3;
+  --color-bg-2: #e3f0ec;
+  --color-ink: #0c211d;
+  --color-muted: #5b736d;
+  --color-line: #d6e6e1;
+
+  /* focus-mode dark */
+  --color-focus-bg: #081312;
+  --color-focus-bg-2: #0c1b19;
+  --color-focus-ink: #eafff8;
+  --color-focus-muted: #86a39b;
+
+  /* coral accent — B / loop-end color */
+  --color-coral-500: #e76f51; /* display / brand coral (logo B) — 2.93:1 vs white, decorative/large-text use */
+  --color-coral-600: #d85a3d; /* functional coral — 3.62:1 vs white, meets ≥3:1 for non-text UI */
+
+  --radius-card: 18px;
+  --radius-stage: 26px;
+}
+
+:root {
+  --rt-grad: linear-gradient(100deg, #0d9488 0%, #10b981 52%, #34d399 100%);
+}
+
+html {
+  color-scheme: light;
+}
+
+/* Tailwind v4's preflight no longer sets this; restore the clickable affordance. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+label[for] {
+  cursor: pointer;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* tabular figures for all time displays */
+.tabnum {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* player content easing in as the page morphs from input → player */
+@keyframes rt-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rt-rise {
+  animation: rt-rise 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* respect reduced motion globally for our transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
