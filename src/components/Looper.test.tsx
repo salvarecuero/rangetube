@@ -133,6 +133,18 @@ describe("Looper", () => {
     expect(screen.getByPlaceholderText(/youtube link/i)).toBeInTheDocument();
   });
 
+  it("clears share params from the URL when leaving a video", async () => {
+    await renderPlaying();
+    // Activation writes the loop params into the URL (deep-link support).
+    expect(window.location.search).toMatch(/v=dQw4w9WgXcQ/);
+
+    fireEvent.click(screen.getByRole("link", { name: /back to start/i }));
+    fireEvent.click(await screen.findByRole("button", { name: /^leave$/i }));
+
+    // A reload after leaving must land on the empty looper, not the old video.
+    await waitFor(() => expect(window.location.search).toBe(""));
+  });
+
   it("does not intercept modified clicks on the logo (browser opens href natively)", async () => {
     await renderPlaying();
 

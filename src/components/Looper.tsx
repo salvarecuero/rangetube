@@ -172,6 +172,11 @@ export function Looper() {
     setUrlInput("");
     setError(null);
     setPhase("input");
+    try {
+      window.history.replaceState(null, "", window.location.pathname);
+    } catch {
+      /* sandboxed iframe may block history - best-effort */
+    }
   }
 
   function requestHome() {
