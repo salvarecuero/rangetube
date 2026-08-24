@@ -19,7 +19,7 @@ export function PlayerStage({ status, hostRef, error, onRetry }: PlayerStageProp
       {/* YT.Player replaces the inner mount node with an <iframe>, copying its
           class/id. So the mount carries no sizing/visibility class to inherit;
           the wrapper forces the resulting iframe to fill the 16:9 stage. */}
-      <div className="absolute inset-0 [&>iframe]:h-full [&>iframe]:w-full">
+      <div className="absolute inset-0 [&>iframe]:h-full [&>iframe]:w-full [&>iframe]:rounded-[var(--radius-stage)] [&>iframe]:bg-black">
         <div ref={hostRef} />
       </div>
       {status === "loading" && (

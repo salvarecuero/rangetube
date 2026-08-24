@@ -1,11 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/preact";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/preact";
 import { Looper } from "./Looper";
 import { createPlayer } from "../lib/youtube/iframeApi";
 
 vi.mock("../lib/youtube/iframeApi", () => ({ createPlayer: vi.fn() }));
 
 const createPlayerMock = vi.mocked(createPlayer);
+
+type YTStateListener = (event: { data: number }) => void;
+let stateListeners: YTStateListener[] = [];
+
+/** Fire an onStateChange event as if it came from the real YouTube player
+ *  (e.g. the user paused via the native controls). */
+function fireNativeStateChange(data: number) {
+  for (const listener of [...stateListeners]) listener({ data });
+}
 
 function makeMockPlayer() {
   return {
@@ -17,6 +26,12 @@ function makeMockPlayer() {
     getPlayerState: () => 1, // YT "playing"
     setPlaybackRate: vi.fn(),
     destroy: vi.fn(),
+    addEventListener: vi.fn((_type: "onStateChange", listener: YTStateListener) => {
+      stateListeners.push(listener);
+    }),
+    removeEventListener: vi.fn((_type: "onStateChange", listener: YTStateListener) => {
+      stateListeners = stateListeners.filter((l) => l !== listener);
+    }),
   };
 }
 
@@ -58,6 +73,7 @@ describe("Looper", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    stateListeners = [];
   });
   afterEach(() => {
     window.history.replaceState(null, "", "/");
@@ -78,25 +94,88 @@ describe("Looper", () => {
     await renderPlaying();
 
     // Entering focus mode lands keyboard focus on the play/pause control.
-    fireEvent.click(screen.getByRole("button", { name: /focus mode/i }));
+    // Exact name: the deck toggle is "Focus mode"; the exit chip is "Exit focus mode".
+    fireEvent.click(screen.getByRole("button", { name: "Focus mode" }));
     await waitFor(() => expect(screen.getByRole("button", { name: /pause/i })).toHaveFocus());
 
     // Esc always exits, returning focus to the focus toggle (a sensible re-entry point).
     fireEvent.keyDown(document.body, { key: "Escape" });
-    await waitFor(() => expect(screen.getByRole("button", { name: /focus mode/i })).toHaveFocus());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Focus mode" })).toHaveFocus());
+  });
+
+  it("shows an explicit exit chip in focus mode that exits on click", async () => {
+    await renderPlaying();
+    fireEvent.click(screen.getByRole("button", { name: "Focus mode" }));
+
+    const exitChip = await screen.findByRole("button", { name: /exit focus mode/i });
+    fireEvent.click(exitChip);
+
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: /exit focus mode/i })).not.toBeInTheDocument(),
+    );
+    // Back in the normal layout: the deck toggle is offered again, not pressed.
+    expect(screen.getByRole("button", { name: "Focus mode" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
   });
 
   it("confirms before resetting via the logo while a video is playing", async () => {
     await renderPlaying();
 
     // Clicking the logo while playing opens a confirmation, not an immediate reset.
-    fireEvent.click(screen.getByRole("button", { name: /back to start/i }));
+    fireEvent.click(screen.getByRole("link", { name: /back to start/i }));
     expect(await screen.findByRole("dialog")).toHaveTextContent(/leave this video/i);
 
     // Confirming returns to the hero input.
     fireEvent.click(screen.getByRole("button", { name: /^leave$/i }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.getByPlaceholderText(/youtube link/i)).toBeInTheDocument();
+  });
+
+  it("does not intercept modified clicks on the logo (browser opens href natively)", async () => {
+    await renderPlaying();
+
+    // Ctrl+click must skip the preventDefault/requestHome path entirely:
+    // no confirm dialog, no reset - the browser handles the navigation.
+    fireEvent.click(screen.getByRole("link", { name: /back to start/i }), { ctrlKey: true });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // Still in the playing state: the pause control is still rendered.
+    expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument();
+  });
+
+  it("syncs the play/pause toggle when the video is paused or played via the native controls", async () => {
+    await renderPlaying();
+    expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+
+    // User pauses inside YouTube's own control bar: our toggle must follow.
+    act(() => fireNativeStateChange(2)); // YT.PlayerState.PAUSED
+    await waitFor(() => expect(screen.getByRole("button", { name: "Play" })).toBeInTheDocument());
+
+    // A transient buffering event (e.g. after a native seek) must not flip it.
+    act(() => fireNativeStateChange(3)); // YT.PlayerState.BUFFERING
+    expect(screen.getByRole("button", { name: "Play" })).toBeInTheDocument();
+
+    // User resumes natively.
+    act(() => fireNativeStateChange(1)); // YT.PlayerState.PLAYING
+    await waitFor(() => expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument());
+  });
+
+  it("stops listening for native state changes after teardown via the logo", async () => {
+    const { source } = await renderPlaying();
+    fireEvent.click(screen.getByRole("link", { name: /back to start/i }));
+    fireEvent.click(await screen.findByRole("button", { name: /^leave$/i }));
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: /play video/i })).not.toBeInTheDocument(),
+    );
+
+    // The destroyed source must have unsubscribed from the player: firing a
+    // late event must not crash and must not resurrect any UI state.
+    expect(() => act(() => fireNativeStateChange(2))).not.toThrow();
+    expect(source.removeEventListener).toHaveBeenCalledWith(
+      "onStateChange",
+      source.addEventListener.mock.calls[0]?.[1],
+    );
   });
 
   it("changes playback rate via the speed control", async () => {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { parseVideoId } from "../lib/youtube/parseVideoId";
 import { createPlayer } from "../lib/youtube/iframeApi";
 import { YouTubeSource } from "../lib/player/youtubeSource";
@@ -49,6 +49,8 @@ export function Looper() {
   const focusButtonRef = useRef<HTMLButtonElement>(null);
   const sourceRef = useRef<YouTubeSource | null>(null);
   const engineRef = useRef<LoopEngine | null>(null);
+  // Unsubscribe for the source's state-change subscription (native play/pause sync).
+  const offSourceStateRef = useRef<(() => void) | null>(null);
   const scrubbing = useRef(false);
   const wasPlaying = useRef(false);
   // Refs that always hold the current range/duration so mark-key handlers can
@@ -76,7 +78,7 @@ export function Looper() {
   );
 
   useEffect(() => startPortfolioReady(), []);
-  // Deep link: read videoId + range + rate from the URL on mount (client-only —
+  // Deep link: read videoId + range + rate from the URL on mount (client-only -
   // `window` is undefined during Astro's SSR/prerender, so this must not run in
   // a render-phase initializer). The player still only loads on the facade click.
   useEffect(() => {
@@ -121,6 +123,7 @@ export function Looper() {
   useEffect(
     () => () => {
       engineRef.current?.stop();
+      offSourceStateRef.current?.();
       sourceRef.current?.destroy();
     },
     [],
@@ -151,6 +154,8 @@ export function Looper() {
   function teardownPlayer() {
     engineRef.current?.stop();
     engineRef.current = null;
+    offSourceStateRef.current?.();
+    offSourceStateRef.current = null;
     sourceRef.current?.destroy();
     sourceRef.current = null;
     setSource(null);
@@ -224,12 +229,20 @@ export function Looper() {
             }
           : {
               kind: "unavailable",
-              message: "This video can't be embedded — it may be private, removed, or restricted.",
+              message: "This video can't be embedded - it may be private, removed, or restricted.",
             },
       );
       return;
     }
     const nextSource = new YouTubeSource(result.player);
+    // Native-control changes (user pauses/plays/seeks inside the YouTube UI)
+    // are authoritative. Buffering is transient and follows both play and
+    // pause, so it must not flip the toggle.
+    offSourceStateRef.current?.();
+    offSourceStateRef.current = nextSource.onStateChange((state) => {
+      if (state === "buffering") return;
+      setPlaying(state === "playing");
+    });
     sourceRef.current = nextSource;
     setSource(nextSource);
     const dur = nextSource.getDuration();
@@ -256,7 +269,7 @@ export function Looper() {
     engineRef.current = engine;
     if (initialRate !== 1) nextSource.setPlaybackRate(initialRate);
     if (initialRange[0] > 0) nextSource.seekTo(initialRange[0]);
-    // Activation is user-initiated (the facade click), so kick off playback now —
+    // Activation is user-initiated (the facade click), so kick off playback now -
     // YT's autoplay playerVar alone is unreliable when the player is API-created.
     nextSource.play();
     syncUrl(initialRange, initialRate);
@@ -355,7 +368,7 @@ export function Looper() {
       });
       window.history.replaceState(null, "", `${window.location.pathname}?${qs}`);
     } catch {
-      /* sandboxed iframe may block history — best-effort */
+      /* sandboxed iframe may block history - best-effort */
     }
   }
 
@@ -376,14 +389,22 @@ export function Looper() {
         <header
           className={`flex justify-center px-5 transition-all duration-[450ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${phase === "input" ? "pt-12 sm:pt-16" : "pt-4 sm:pt-5"}`}
         >
-          <button
-            type="button"
-            onClick={requestHome}
-            aria-label="RangeTube — back to start"
-            className="rounded-xl transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500"
+          <a
+            href="/"
+            onClick={(e) => {
+              // Plain left click: stay in-app and go through requestHome (confirm
+              // dialog while playing). Modified/middle clicks fall through so the
+              // browser opens href="/" natively (new tab).
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                e.preventDefault();
+                requestHome();
+              }
+            }}
+            aria-label="RangeTube - back to start"
+            className="inline-flex items-center rounded-xl transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500"
           >
             <Logo compact={phase !== "input"} />
-          </button>
+          </a>
         </header>
       )}
 
@@ -522,9 +543,11 @@ export function Looper() {
         <button
           type="button"
           onClick={exit}
-          className="fixed right-5 top-5 z-50 text-xs text-focus-muted hover:text-focus-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300 focus-visible:rounded-sm"
+          title="Exit focus mode (Esc)"
+          className="fixed right-5 top-5 z-50 inline-flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-xs font-medium text-focus-ink backdrop-blur transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"
         >
-          Focus mode · Esc to exit
+          <X className="h-4 w-4" aria-hidden="true" />
+          Exit focus mode
         </button>
       )}
 
