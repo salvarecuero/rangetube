@@ -6,7 +6,7 @@ export interface TimeFieldProps {
   label: string;
   /** Accessible name for the input, e.g. "Loop start". */
   ariaLabel: string;
-  /** Current value in seconds (source of truth — also updated by slider drags). */
+  /** Current value in seconds (source of truth - also updated by slider drags). */
   seconds: number;
   /** Clamp bounds for a committed value. */
   min: number;

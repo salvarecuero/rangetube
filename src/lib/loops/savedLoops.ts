@@ -18,7 +18,7 @@ function writeAll(storage: StorageLike, loops: SavedLoop[]): void {
   try {
     storage.setItem(KEY, JSON.stringify(loops));
   } catch {
-    /* storage full / unavailable — best-effort */
+    /* storage full / unavailable - best-effort */
   }
 }
 

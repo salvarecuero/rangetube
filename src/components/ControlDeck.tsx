@@ -21,7 +21,7 @@ import { MIN_GAP } from "../lib/player/markRange";
  *  Viewport-based is sufficient: the deck only becomes narrow at narrow
  *  viewports (its width is otherwise capped by the stage's height-based
  *  maxWidth, which is still wide enough for the desktop cluster). 600px was
- *  confirmed in visual verification — the desktop cluster fits without
+ *  confirmed in visual verification - the desktop cluster fits without
  *  wrapping above it and the mobile row has no overflow below it. */
 const COMPACT_QUERY = "(max-width: 600px)";
 
@@ -31,9 +31,9 @@ export interface ControlDeckProps {
   range: [number, number];
   playing: boolean;
   trackRef: RefObject<HTMLDivElement | null>;
-  /** Play/pause button — focused when entering focus mode. */
+  /** Play/pause button - focused when entering focus mode. */
   playPauseRef?: RefObject<HTMLButtonElement | null>;
-  /** Focus-mode toggle — focused when leaving focus mode. */
+  /** Focus-mode toggle - focused when leaving focus mode. */
   focusButtonRef?: RefObject<HTMLButtonElement | null>;
   /** Live current-time numerator is written here via rAF (no React re-render). */
   currentTimeRef: RefObject<HTMLSpanElement | null>;
@@ -101,7 +101,7 @@ export function ControlDeck({
 }: ControlDeckProps) {
   const dark = variant === "dark";
 
-  // Desktop arrangement by default (also the jsdom/SSR default — avoids a
+  // Desktop arrangement by default (also the jsdom/SSR default - avoids a
   // hydration mismatch); a client-side media query switches to the mobile
   // arrangement. Only one arrangement is ever mounted, so refs stay unique.
   const [compact, setCompact] = useState(false);
@@ -122,7 +122,7 @@ export function ControlDeck({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* clipboard blocked — no-op; URL is still in the address bar */
+      /* clipboard blocked - no-op; URL is still in the address bar */
     }
   }
 
@@ -192,7 +192,7 @@ export function ControlDeck({
     <button
       type="button"
       onClick={onMarkIn}
-      title="Mark in — set A to current time ([)"
+      title="Mark in - set A to current time ([)"
       className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
         dark
           ? "border-white/12 bg-white/[0.06] text-brand-300 hover:border-brand-400"
@@ -208,7 +208,7 @@ export function ControlDeck({
     <button
       type="button"
       onClick={onMarkOut}
-      title="Mark out — set B to current time (])"
+      title="Mark out - set B to current time (])"
       className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
         dark
           ? "border-white/12 bg-white/[0.06] text-coral-500 hover:border-coral-500"
@@ -269,7 +269,7 @@ export function ControlDeck({
       onClick={onToggleLoop}
       aria-label="Toggle loop"
       aria-pressed={looping}
-      title={looping ? "Loop on — repeats A→B" : "Loop off — plays past B"}
+      title={looping ? "Loop on - repeats A→B" : "Loop off - plays past B"}
       className={clusterBtn(looping)}
     >
       <Repeat className="h-5 w-5" aria-hidden="true" />
@@ -283,7 +283,7 @@ export function ControlDeck({
       onClick={onFocus}
       aria-label="Focus mode"
       aria-pressed={focusActive}
-      title={focusActive ? "Exit focus mode (Esc)" : "Focus mode — hide everything but the player"}
+      title={focusActive ? "Exit focus mode (Esc)" : "Focus mode - hide everything but the player"}
       className={clusterBtn(focusActive)}
     >
       <Focus className="h-5 w-5" aria-hidden="true" />
@@ -326,7 +326,7 @@ export function ControlDeck({
           : "border-line bg-surface shadow-xl shadow-brand-900/5"
       }`}
     >
-      {/* Row 1 — timeline, full width */}
+      {/* Row 1 - timeline, full width */}
       <RangeSlider
         ref={trackRef}
         min={min}
@@ -342,7 +342,7 @@ export function ControlDeck({
 
       {compact ? (
         <>
-          {/* Mobile — time centered; A·⇤A · Play · B⇥·B; secondary cluster centered */}
+          {/* Mobile - time centered; A·⇤A · Play · B⇥·B; secondary cluster centered */}
           <div className="mt-2 flex justify-center">{readoutBtn}</div>
           <div className="mt-2 flex items-center justify-center gap-3">
             <div className="flex items-center gap-1.5">
@@ -365,7 +365,7 @@ export function ControlDeck({
         </>
       ) : (
         <>
-          {/* Desktop — A · time · B aligned; centered cluster with Play in the middle */}
+          {/* Desktop - A · time · B aligned; centered cluster with Play in the middle */}
           <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2">
             <div className="justify-self-start">{aField}</div>
             <div className="justify-self-center">{readoutBtn}</div>

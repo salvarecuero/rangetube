@@ -14,13 +14,13 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
       const text = await navigator.clipboard.readText();
       if (text) onChange(text.trim());
     } catch {
-      /* clipboard unavailable or denied (e.g. embedded) — user can paste manually */
+      /* clipboard unavailable or denied (e.g. embedded) - user can paste manually */
     }
   }
 
   return (
     <div className="mx-auto grid w-full max-w-3xl flex-1 grid-cols-[minmax(0,1fr)] grid-rows-[1fr_auto_1fr] text-center">
-      {/* Above the input — anchored to the bottom of its region so it sits just above the centered form. */}
+      {/* Above the input - anchored to the bottom of its region so it sits just above the centered form. */}
       <div className="flex flex-col justify-end pb-7">
         <h2 className="font-display mx-auto mb-4 max-w-[18ch] text-4xl font-bold leading-[1.06] tracking-tight @md:text-5xl">
           Loop the{" "}
@@ -30,11 +30,11 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
           of any YouTube video
         </h2>
         <p className="mx-auto max-w-[46ch] text-base text-muted">
-          Pick a start and an end, and it repeats — endlessly.
+          Pick a start and an end, and it repeats - endlessly.
         </p>
       </div>
 
-      {/* The input — the page's vertical anchor. */}
+      {/* The input - the page's vertical anchor. */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -72,7 +72,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
         </button>
       </form>
 
-      {/* Below the input — anchored to the top of its region so it sits just below the form. */}
+      {/* Below the input - anchored to the top of its region so it sits just below the form. */}
       <div className="flex flex-col items-center pt-5">
         {error && (
           <p role="alert" className="mb-1 text-sm font-medium text-rose-600">

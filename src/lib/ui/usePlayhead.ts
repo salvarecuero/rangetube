@@ -5,7 +5,7 @@ import { playheadPercent, playheadTimeText, type TimeMode } from "./playhead";
 
 /**
  * While `active`, writes the live playhead position as `--rt-playhead` (a %
- * string) onto `targetRef`, and — if `timeRef` is given — the current-time
+ * string) onto `targetRef`, and - if `timeRef` is given - the current-time
  * numerator as that element's text (absolute, or loop-relative from
  * `rangeStart`, per `timeMode`). Both update via rAF/DOM, avoiding React renders.
  */

@@ -8,9 +8,9 @@ export interface RangeSliderProps {
   step?: number;
   /** Minimum seconds between the two thumbs (no zero-length loop). */
   minGap?: number;
-  /** Commit (e.g. engine.setRange) — fires on keyboard change and pointer release. */
+  /** Commit (e.g. engine.setRange) - fires on keyboard change and pointer release. */
   onChange: (value: [number, number]) => void;
-  /** Live preview during a drag — `scrubSeconds` is the thumb's current second. Does NOT commit. */
+  /** Live preview during a drag - `scrubSeconds` is the thumb's current second. Does NOT commit. */
   onPreview?: (value: [number, number], scrubSeconds: number) => void;
   /** Fired when a thumb drag begins (e.g. to pause playback while scrubbing). */
   onScrubStart?: () => void;

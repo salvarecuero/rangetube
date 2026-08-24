@@ -55,7 +55,7 @@ export function webApplication(siteUrl: string) {
     name: "RangeTube",
     url,
     description:
-      "Free tool to loop a specific section of any YouTube video. Set a start and end time and repeat only that part endlessly — for music practice, language learning, dance, and study.",
+      "Free tool to loop a specific section of any YouTube video. Set a start and end time and repeat only that part endlessly - for music practice, language learning, dance, and study.",
     applicationCategory: "MultimediaApplication",
     operatingSystem: "Web browser",
     browserRequirements: "Requires JavaScript. Requires HTML5.",

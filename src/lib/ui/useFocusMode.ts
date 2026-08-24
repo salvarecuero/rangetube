@@ -32,7 +32,7 @@ export function useFocusMode({ enterFocusRef, exitFocusRef }: FocusModeOptions =
     try {
       localStorage.setItem(KEY, "1");
     } catch {
-      /* storage unavailable (e.g. embedded) — non-fatal */
+      /* storage unavailable (e.g. embedded) - non-fatal */
     }
   }, []);
 
@@ -49,7 +49,7 @@ export function useFocusMode({ enterFocusRef, exitFocusRef }: FocusModeOptions =
 
   // Move focus to a sensible control on each transition so keyboard users land
   // somewhere useful: the play/pause button on enter, the focus toggle on exit.
-  // We never trap focus — this is a one-time move; Tab and Esc keep working.
+  // We never trap focus - this is a one-time move; Tab and Esc keep working.
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
