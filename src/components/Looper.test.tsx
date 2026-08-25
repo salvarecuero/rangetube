@@ -10,8 +10,6 @@ const createPlayerMock = vi.mocked(createPlayer);
 type YTStateListener = (event: { data: number }) => void;
 let stateListeners: YTStateListener[] = [];
 
-/** Fire an onStateChange event as if it came from the real YouTube player
- *  (e.g. the user paused via the native controls). */
 function fireNativeStateChange(data: number) {
   for (const listener of [...stateListeners]) listener({ data });
 }

@@ -49,7 +49,6 @@ export function Looper() {
   const focusButtonRef = useRef<HTMLButtonElement>(null);
   const sourceRef = useRef<YouTubeSource | null>(null);
   const engineRef = useRef<LoopEngine | null>(null);
-  // Unsubscribe for the source's state-change subscription (native play/pause sync).
   const offSourceStateRef = useRef<(() => void) | null>(null);
   const scrubbing = useRef(false);
   const wasPlaying = useRef(false);
@@ -240,9 +239,6 @@ export function Looper() {
       return;
     }
     const nextSource = new YouTubeSource(result.player);
-    // Native-control changes (user pauses/plays/seeks inside the YouTube UI)
-    // are authoritative. Buffering is transient and follows both play and
-    // pause, so it must not flip the toggle.
     offSourceStateRef.current?.();
     offSourceStateRef.current = nextSource.onStateChange((state) => {
       if (state === "buffering") return;
