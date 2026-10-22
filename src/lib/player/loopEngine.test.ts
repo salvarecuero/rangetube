@@ -13,6 +13,12 @@ describe("LoopEngine.tick", () => {
     engine.tick();
     expect(seekTo).not.toHaveBeenCalled();
   });
+  it("does nothing when the range is empty (duration not known yet, e.g. upcoming premiere)", () => {
+    const { engine, seekTo } = setup(0);
+    engine.setRange({ start: 0, end: 0 });
+    engine.tick();
+    expect(seekTo).not.toHaveBeenCalled();
+  });
   it("does nothing while position is inside the range", () => {
     const { engine, seekTo } = setup(15);
     engine.setRange({ start: 10, end: 20 });

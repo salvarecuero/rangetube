@@ -49,7 +49,7 @@ export class LoopEngine {
 
   /** One evaluation of the loop condition. Pure given getCurrentTime/seekTo. */
   tick(): void {
-    if (!this.enabled || !this.range) return;
+    if (!this.enabled || !this.range || this.range.end <= this.range.start) return;
     const EPSILON = 0.05; // seconds; absorbs polling/float drift at the loop end
     const t = this.getCurrentTime();
     if (t >= this.range.end - EPSILON || t < this.range.start) {
