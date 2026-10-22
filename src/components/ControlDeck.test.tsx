@@ -61,6 +61,13 @@ describe("ControlDeck", () => {
     expect(screen.getByText("30s")).toBeInTheDocument(); // 40 - 10
   });
 
+  it("shows time from the live edge without a total in live mode", () => {
+    render(<ControlDeck {...props({ timeMode: "live" })} />);
+    expect(screen.getByText(/from live/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/current time/i)).toHaveTextContent("LIVE");
+    expect(screen.queryByText(" / ")).not.toBeInTheDocument();
+  });
+
   it("toggles the time mode when the readout is clicked", () => {
     const onToggleTimeMode = vi.fn();
     render(<ControlDeck {...props({ onToggleTimeMode })} />);

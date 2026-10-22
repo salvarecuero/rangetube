@@ -17,7 +17,8 @@ function fireNativeStateChange(data: number) {
 function makeMockPlayer() {
   return {
     getCurrentTime: vi.fn().mockReturnValue(0),
-    getDuration: () => 100,
+    getDuration: vi.fn().mockReturnValue(100),
+    getVideoData: vi.fn().mockReturnValue({ isLive: false }),
     seekTo: vi.fn(),
     playVideo: vi.fn(),
     pauseVideo: vi.fn(),
@@ -50,6 +51,19 @@ async function renderPlaying() {
   // Wait for the ControlDeck to be rendered (status=ready + duration>0).
   await waitFor(() => expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument());
   return { source: player };
+}
+
+/** Load + activate a given mock player without waiting for the ControlDeck
+ *  (live streams and upcoming premieres have no timeline yet at activation). */
+async function renderActivated(player: ReturnType<typeof makeMockPlayer>) {
+  createPlayerMock.mockResolvedValue({ ok: true, player });
+  render(<Looper />);
+  fireEvent.change(screen.getByPlaceholderText(/youtube link/i), {
+    target: { value: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: /load video/i }));
+  fireEvent.click(await screen.findByRole("button", { name: /play video/i }));
+  await waitFor(() => expect(player.playVideo).toHaveBeenCalled());
 }
 
 /** Like renderPlaying(), but the videoId comes from the deep-link URL already
@@ -256,5 +270,149 @@ describe("Looper", () => {
     expect(screen.getByRole("region", { name: /saved loops/i })).toBeInTheDocument();
     fireEvent.keyDown(document.body, { key: "f" });
     expect(screen.queryByRole("region", { name: /saved loops/i })).not.toBeInTheDocument();
+  });
+
+  describe("live streams", () => {
+    // Fake only the live tick's clock. jsdom drives rAF off setInterval, so
+    // route rAF through the (real) setTimeout instead.
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
+      vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) =>
+        setTimeout(() => cb(performance.now()), 16),
+      );
+      vi.stubGlobal("cancelAnimationFrame", (id: number) => clearTimeout(id));
+    });
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    });
+    const tick = (ms = 1000) =>
+      act(async () => {
+        await vi.advanceTimersByTimeAsync(ms);
+      });
+    // Activation settles outside act(), so give Preact's rAF-scheduled effects
+    // (the live tick's setInterval) a real frame to register.
+    async function activate(player: ReturnType<typeof makeMockPlayer>) {
+      await renderActivated(player);
+      await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+    }
+    const startThumb = () => screen.getByRole("slider", { name: /loop start/i });
+    const endThumb = () => screen.getByRole("slider", { name: /loop end/i });
+
+    function livePlayer(currentTime: number) {
+      const player = makeMockPlayer();
+      player.getVideoData.mockReturnValue({ isLive: true });
+      player.getDuration.mockReturnValue(0);
+      player.getCurrentTime.mockReturnValue(currentTime);
+      return player;
+    }
+
+    it("does not loop while an upcoming premiere has no duration yet", async () => {
+      const player = makeMockPlayer();
+      player.getDuration.mockReturnValue(0);
+      await activate(player);
+      await tick(3000);
+      expect(player.seekTo).not.toHaveBeenCalled();
+      expect(screen.queryByRole("slider", { name: /loop start/i })).not.toBeInTheDocument();
+    });
+
+    it("waits for a stable duration before treating a non-live stream as a video", async () => {
+      const player = makeMockPlayer();
+      player.getDuration.mockReturnValue(0);
+      await activate(player);
+      player.getDuration.mockReturnValue(5);
+      await tick();
+      player.getDuration.mockReturnValue(6);
+      await tick();
+      expect(screen.queryByRole("slider", { name: /loop start/i })).not.toBeInTheDocument();
+      await tick();
+      expect(endThumb()).toHaveAttribute("aria-valuemax", "6");
+    });
+
+    it("follows the live edge without looping until a range is marked", async () => {
+      const player = livePlayer(600);
+      await activate(player);
+      await tick();
+      expect(startThumb()).toHaveAttribute("aria-valuemin", "0");
+      expect(endThumb()).toHaveAttribute("aria-valuemax", "600");
+      await tick(2000);
+      expect(endThumb()).toHaveAttribute("aria-valuemax", "602");
+      expect(endThumb()).toHaveAttribute("aria-valuenow", "602");
+      expect(player.seekTo).not.toHaveBeenCalled();
+    });
+
+    it("marking A at the live edge keeps B following the edge until B is marked", async () => {
+      const player = livePlayer(600);
+      await activate(player);
+      await tick();
+      fireEvent.keyDown(document.body, { key: "[" });
+      await tick(5000);
+      expect(startThumb()).toHaveAttribute("aria-valuenow", "600");
+      expect(endThumb()).toHaveAttribute("aria-valuenow", "605");
+      expect(player.seekTo).not.toHaveBeenCalled();
+      player.getCurrentTime.mockReturnValue(604);
+      fireEvent.keyDown(document.body, { key: "]" });
+      await tick(2000);
+      expect(endThumb()).toHaveAttribute("aria-valuenow", "604");
+    });
+
+    it("reads time from the live edge by default and can switch to stream time", async () => {
+      await activate(livePlayer(600));
+      await tick();
+      expect(screen.getByText(/from live/i)).toBeInTheDocument();
+      const readout = screen.getByRole("button", { name: /switch time readout/i });
+      fireEvent.click(readout);
+      expect(screen.getByText(/in video/i)).toBeInTheDocument();
+      fireEvent.click(readout);
+      expect(screen.getByText(/in loop/i)).toBeInTheDocument();
+      fireEvent.click(readout);
+      expect(screen.getByText(/from live/i)).toBeInTheDocument();
+    });
+
+    it("limits a long stream's timeline to the trailing 12h DVR window", async () => {
+      const player = livePlayer(100_000);
+      await activate(player);
+      await tick();
+      expect(startThumb()).toHaveAttribute("aria-valuemin", String(100_000 - 12 * 3600));
+    });
+
+    it("stops following the edge once the user marks a range", async () => {
+      const player = livePlayer(600);
+      await activate(player);
+      await tick();
+      player.getCurrentTime.mockReturnValue(550);
+      fireEvent.keyDown(document.body, { key: "[" });
+      player.getCurrentTime.mockReturnValue(570);
+      fireEvent.keyDown(document.body, { key: "]" });
+      await tick(3000);
+      expect(startThumb()).toHaveAttribute("aria-valuenow", "550");
+      expect(endThumb()).toHaveAttribute("aria-valuenow", "570");
+      expect(endThumb()).toHaveAttribute("aria-valuemax", "603");
+    });
+
+    it("keeps a marked A when the stream ends before B is marked", async () => {
+      const player = livePlayer(600);
+      await activate(player);
+      await tick();
+      fireEvent.keyDown(document.body, { key: "[" });
+      player.getVideoData.mockReturnValue({ isLive: false });
+      player.getDuration.mockReturnValue(900);
+      await tick(2000);
+      expect(startThumb()).toHaveAttribute("aria-valuenow", "600");
+      expect(endThumb()).toHaveAttribute("aria-valuenow", "900");
+      expect(endThumb()).toHaveAttribute("aria-valuemax", "900");
+    });
+
+    it("becomes a regular video when the stream ends", async () => {
+      const player = livePlayer(600);
+      await activate(player);
+      await tick();
+      player.getVideoData.mockReturnValue({ isLive: false });
+      player.getDuration.mockReturnValue(900);
+      await tick(2000);
+      expect(startThumb()).toHaveAttribute("aria-valuemin", "0");
+      expect(endThumb()).toHaveAttribute("aria-valuemax", "900");
+      expect(endThumb()).toHaveAttribute("aria-valuenow", "900");
+    });
   });
 });

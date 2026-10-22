@@ -127,9 +127,10 @@ export function ControlDeck({
   }
 
   const loopLength = Math.max(0, range[1] - range[0]);
-  const denom = timeMode === "loop" ? format(loopLength) : format(max);
-  const modeLabel = timeMode === "loop" ? "in loop" : "in video";
-  const initialNumerator = timeMode === "loop" ? format(0) : format(range[0]);
+  const denom = timeMode === "live" ? null : timeMode === "loop" ? format(loopLength) : format(max);
+  const modeLabel = { video: "in video", loop: "in loop", live: "from live" }[timeMode];
+  const initialNumerator =
+    timeMode === "live" ? "LIVE" : timeMode === "loop" ? format(0) : format(range[0]);
 
   // Cluster button styling; `active` is the pressed-toggle look (loop on / focus on).
   const clusterBtn = (active: boolean) => {
@@ -225,17 +226,21 @@ export function ControlDeck({
       type="button"
       onClick={onToggleTimeMode}
       aria-label="Switch time readout"
-      title="Switch between time in video and time in loop"
+      title="Switch the time readout"
       className={`flex flex-col items-center gap-0.5 rounded-lg px-2.5 py-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-        timeMode === "loop" ? (dark ? "bg-brand-500/15" : "bg-brand-50") : "hover:bg-brand-500/10"
+        timeMode !== "video" ? (dark ? "bg-brand-500/15" : "bg-brand-50") : "hover:bg-brand-500/10"
       }`}
     >
       <span className={`tabnum text-[13px] font-bold ${dark ? "text-focus-ink" : "text-ink"}`}>
         <span ref={currentTimeRef} aria-label="Current time">
           {initialNumerator}
         </span>
-        <span className={dark ? "text-focus-muted" : "text-muted"}> / </span>
-        <span className={dark ? "text-focus-muted" : "text-muted"}>{denom}</span>
+        {denom !== null && (
+          <>
+            <span className={dark ? "text-focus-muted" : "text-muted"}> / </span>
+            <span className={dark ? "text-focus-muted" : "text-muted"}>{denom}</span>
+          </>
+        )}
       </span>
       <span
         className={`flex items-center gap-1 text-[9.5px] font-semibold uppercase tracking-wider ${

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { playheadPercent, playheadTimeText } from "./playhead";
+import { nextTimeMode, playheadPercent, playheadTimeText } from "./playhead";
 
 describe("playheadPercent", () => {
   it("maps current time to 0-100 within [min,max]", () => {
@@ -25,5 +25,26 @@ describe("playheadTimeText", () => {
   });
   it("clamps to zero when the playhead is before the loop start", () => {
     expect(playheadTimeText(5, 12, "loop")).toBe("0:00.0");
+  });
+});
+
+describe("playheadTimeText in live mode", () => {
+  it("shows how far behind the live edge the playhead is", () => {
+    expect(playheadTimeText(1000, 0, "live", 1083.4)).toBe("-1:23");
+  });
+  it("shows LIVE when the playhead is at the edge", () => {
+    expect(playheadTimeText(1000, 0, "live", 1001)).toBe("LIVE");
+  });
+});
+
+describe("nextTimeMode", () => {
+  it("cycles video and loop for regular videos", () => {
+    expect(nextTimeMode("video", false)).toBe("loop");
+    expect(nextTimeMode("loop", false)).toBe("video");
+  });
+  it("adds the live mode to the cycle for live streams", () => {
+    expect(nextTimeMode("video", true)).toBe("loop");
+    expect(nextTimeMode("loop", true)).toBe("live");
+    expect(nextTimeMode("live", true)).toBe("video");
   });
 });

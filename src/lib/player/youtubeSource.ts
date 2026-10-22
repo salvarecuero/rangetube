@@ -4,6 +4,8 @@ import type { PlaybackCapabilities, PlaybackState, SourcePlayer } from "./types"
 export interface YTPlayerLike {
   getCurrentTime(): number;
   getDuration(): number;
+  /** Undocumented but stable; `isLive` is true for live streams and airing premieres. */
+  getVideoData?(): { isLive?: boolean };
   seekTo(seconds: number, allowSeekAhead: boolean): void;
   playVideo(): void;
   pauseVideo(): void;
@@ -66,6 +68,9 @@ export class YouTubeSource implements SourcePlayer {
   }
   getDuration(): number {
     return this.player.getDuration();
+  }
+  isLive(): boolean {
+    return this.player.getVideoData?.().isLive === true;
   }
   seekTo(seconds: number): void {
     this.player.seekTo(seconds, true);

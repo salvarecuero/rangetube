@@ -6,8 +6,8 @@ import { playheadPercent, playheadTimeText, type TimeMode } from "./playhead";
 /**
  * While `active`, writes the live playhead position as `--rt-playhead` (a %
  * string) onto `targetRef`, and - if `timeRef` is given - the current-time
- * numerator as that element's text (absolute, or loop-relative from
- * `rangeStart`, per `timeMode`). Both update via rAF/DOM, avoiding React renders.
+ * numerator as that element's text (absolute, loop-relative from
+ * `rangeStart`, or behind the live edge `max`, per `timeMode`). Both update via rAF/DOM, avoiding React renders.
  */
 export function usePlayhead(
   targetRef: RefObject<HTMLElement | null>,
@@ -26,7 +26,8 @@ export function usePlayhead(
     const loop = () => {
       const t = source.getCurrentTime();
       el.style.setProperty("--rt-playhead", `${playheadPercent(t, min, max)}%`);
-      if (timeRef?.current) timeRef.current.textContent = playheadTimeText(t, rangeStart, timeMode);
+      if (timeRef?.current)
+        timeRef.current.textContent = playheadTimeText(t, rangeStart, timeMode, max);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

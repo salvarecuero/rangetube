@@ -7,9 +7,10 @@ import { LoopEngine } from "../lib/player/loopEngine";
 import { startPortfolioReady } from "../lib/embed/portfolioEmbed";
 import { formatTime } from "../lib/ui/formatTime";
 import { markIn, markOut, MIN_GAP } from "../lib/player/markRange";
+import { liveEdgeAt, liveWindow, observeLiveEdge, type LiveEdge } from "../lib/player/liveEdge";
 import { useFocusMode, isTypingTarget } from "../lib/ui/useFocusMode";
 import { usePlayhead } from "../lib/ui/usePlayhead";
-import type { TimeMode } from "../lib/ui/playhead";
+import { nextTimeMode, type TimeMode } from "../lib/ui/playhead";
 import { HeroInput } from "./HeroInput";
 import { Logo } from "./Logo";
 import { PlayerStage, type StageError } from "./PlayerStage";
@@ -23,6 +24,7 @@ import type { LoopState } from "../lib/share/loopState";
 type Phase = "input" | "facade" | "active";
 type Status = "idle" | "loading" | "ready" | "error";
 const DEMO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+const LIVE_TICK_MS = 1000;
 
 export function Looper() {
   const [phase, setPhase] = useState<Phase>("input");
@@ -31,7 +33,10 @@ export function Looper() {
   const [error, setError] = useState<string | null>(null);
   const [stageError, setStageError] = useState<StageError | null>(null);
   const [videoId, setVideoId] = useState<string | null>(null);
+  const [timelineMin, setTimelineMin] = useState(0);
   const [duration, setDuration] = useState(0);
+  // Live stream, or a media whose duration isn't settled yet (upcoming premiere).
+  const [liveMode, setLiveMode] = useState(false);
   const [range, setRange] = useState<[number, number]>([0, 0]);
   const [playing, setPlaying] = useState(false);
   const [source, setSource] = useState<YouTubeSource | null>(null);
@@ -50,15 +55,25 @@ export function Looper() {
   const sourceRef = useRef<YouTubeSource | null>(null);
   const engineRef = useRef<LoopEngine | null>(null);
   const offSourceStateRef = useRef<(() => void) | null>(null);
+  const liveEdgeRef = useRef<LiveEdge | null>(null);
+  // While live, before a full range is chosen, the range tracks the live window
+  // ("window") or just its end after A was marked ("end"), without looping.
+  const followEdgeRef = useRef<"window" | "end" | null>(null);
+  const livePendingRef = useRef<LoopState | null>(null);
+  const lastDurationRef = useRef(0);
   const scrubbing = useRef(false);
   const wasPlaying = useRef(false);
   // Refs that always hold the current range/duration so mark-key handlers can
   // read fresh values from a stable (once-registered) event listener.
   const rangeRef = useRef<[number, number]>(range);
   const durationRef = useRef(duration);
+  const timelineMinRef = useRef(timelineMin);
+  const rateRef = useRef(rate);
   const videoIdRef = useRef<string | null>(videoId);
   rangeRef.current = range;
   durationRef.current = duration;
+  timelineMinRef.current = timelineMin;
+  rateRef.current = rate;
   videoIdRef.current = videoId;
 
   const { focus, toggle, exit } = useFocusMode({
@@ -68,7 +83,7 @@ export function Looper() {
   usePlayhead(
     trackRef,
     source,
-    0,
+    timelineMin,
     duration,
     status === "ready",
     currentTimeRef,
@@ -161,8 +176,14 @@ export function Looper() {
     setPlaying(false);
     setStatus("idle");
     setStageError(null);
+    setTimelineMin(0);
     setDuration(0);
     setRange([0, 0]);
+    setLiveMode(false);
+    liveEdgeRef.current = null;
+    followEdgeRef.current = null;
+    livePendingRef.current = null;
+    lastDurationRef.current = 0;
   }
 
   function resetToStart() {
@@ -247,35 +268,46 @@ export function Looper() {
     sourceRef.current = nextSource;
     setSource(nextSource);
     const dur = nextSource.getDuration();
-    const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
-    let initialRange: [number, number] = [0, dur];
-    let initialRate = 1;
-    if (pendingState) {
-      const start = clamp(pendingState.start, 0, Math.max(0, dur - MIN_GAP));
-      const end = clamp(pendingState.end, start + MIN_GAP, dur);
-      initialRange = [start, end];
-      initialRate = pendingState.rate;
-      setPendingState(null);
-    }
-    setDuration(dur);
-    setRange(initialRange);
+    const initialRate = pendingState?.rate ?? 1;
     setRate(initialRate);
+    if (initialRate !== 1) nextSource.setPlaybackRate(initialRate);
     const engine = new LoopEngine({
       getCurrentTime: () => nextSource.getCurrentTime(),
       seekTo: (s) => nextSource.seekTo(s),
     });
-    engine.setRange({ start: initialRange[0], end: initialRange[1] });
     engine.setEnabled(looping);
     engine.start();
     engineRef.current = engine;
-    if (initialRate !== 1) nextSource.setPlaybackRate(initialRate);
-    if (initialRange[0] > 0) nextSource.seekTo(initialRange[0]);
+    if (nextSource.isLive() || dur <= 0) {
+      livePendingRef.current = pendingState;
+      followEdgeRef.current = "window";
+      setLiveMode(true);
+      setTimeMode("live");
+    } else {
+      initTimeline(0, dur, pendingState, initialRate);
+    }
+    setPendingState(null);
     // Activation is user-initiated (the facade click), so kick off playback now -
     // YT's autoplay playerVar alone is unreliable when the player is API-created.
     nextSource.play();
-    syncUrl(initialRange, initialRate);
     setStatus("ready");
     setPlaying(true);
+  }
+
+  /** Settle the timeline to [min, max] and start looping the (deep-linked or full) range. */
+  function initTimeline(min: number, max: number, pending: LoopState | null, nextRate: number) {
+    const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
+    let next: [number, number] = [min, max];
+    if (pending) {
+      const start = clamp(pending.start, min, Math.max(min, max - MIN_GAP));
+      next = [start, clamp(pending.end, start + MIN_GAP, max)];
+    }
+    setTimelineMin(min);
+    setDuration(max);
+    setRange(next);
+    engineRef.current?.setRange({ start: next[0], end: next[1] });
+    if (next[0] > min) sourceRef.current?.seekTo(next[0]);
+    syncUrl(next, nextRate);
   }
 
   // Dragging a thumb scrubs: pause playback (and the loop engine, so it doesn't
@@ -284,6 +316,7 @@ export function Looper() {
     const s = sourceRef.current;
     if (!s || scrubbing.current) return;
     scrubbing.current = true;
+    followEdgeRef.current = null;
     wasPlaying.current = s.isPlaying();
     engineRef.current?.stop();
     if (wasPlaying.current) {
@@ -296,6 +329,7 @@ export function Looper() {
     sourceRef.current?.seekTo(scrubSeconds);
   }
   function commitRange(next: [number, number]) {
+    followEdgeRef.current = null;
     setRange(next);
     engineRef.current?.setRange({ start: next[0], end: next[1] });
     syncUrl(next, rate);
@@ -311,12 +345,38 @@ export function Looper() {
   function markCurrentIn() {
     const s = sourceRef.current;
     if (!s) return;
-    commitRange(markIn(rangeRef.current, s.getCurrentTime(), 0, durationRef.current, MIN_GAP));
+    if (followEdgeRef.current) {
+      // At the live edge B would land right on A; keep B on the edge until it's marked.
+      followEdgeRef.current = "end";
+      const start = Math.min(
+        Math.max(s.getCurrentTime(), timelineMinRef.current),
+        durationRef.current,
+      );
+      setRange([start, durationRef.current]);
+      return;
+    }
+    commitRange(
+      markIn(
+        rangeRef.current,
+        s.getCurrentTime(),
+        timelineMinRef.current,
+        durationRef.current,
+        MIN_GAP,
+      ),
+    );
   }
   function markCurrentOut() {
     const s = sourceRef.current;
     if (!s) return;
-    commitRange(markOut(rangeRef.current, s.getCurrentTime(), 0, durationRef.current, MIN_GAP));
+    commitRange(
+      markOut(
+        rangeRef.current,
+        s.getCurrentTime(),
+        timelineMinRef.current,
+        durationRef.current,
+        MIN_GAP,
+      ),
+    );
   }
   function seekTo(seconds: number) {
     sourceRef.current?.seekTo(seconds);
@@ -350,6 +410,7 @@ export function Looper() {
 
   function applySavedLoop(state: LoopState) {
     const next: [number, number] = [state.start, state.end];
+    followEdgeRef.current = null;
     setRange(next);
     engineRef.current?.setRange({ start: next[0], end: next[1] });
     setRate(state.rate);
@@ -372,6 +433,51 @@ export function Looper() {
       /* sandboxed iframe may block history - best-effort */
     }
   }
+
+  useEffect(() => {
+    if (!liveMode || status !== "ready" || !source) return;
+    const id = setInterval(() => {
+      if (!source.isLive()) {
+        // Upcoming premiere or a stream that just ended: only treat it as a
+        // regular video once its duration stops changing.
+        const dur = source.getDuration();
+        const stable = dur > 0 && dur === lastDurationRef.current;
+        lastDurationRef.current = dur;
+        if (!stable) return;
+        setLiveMode(false);
+        setTimeMode((m) => (m === "live" ? "video" : m));
+        liveEdgeRef.current = null;
+        if (followEdgeRef.current === "window" || livePendingRef.current) {
+          followEdgeRef.current = null;
+          initTimeline(0, dur, livePendingRef.current, rateRef.current);
+          livePendingRef.current = null;
+        } else {
+          setTimelineMin(0);
+          setDuration(dur);
+          if (followEdgeRef.current === "end") commitRange([rangeRef.current[0], dur]);
+        }
+        return;
+      }
+      const now = Date.now();
+      if (source.isPlaying()) {
+        liveEdgeRef.current = observeLiveEdge(liveEdgeRef.current, source.getCurrentTime(), now);
+      }
+      if (!liveEdgeRef.current) return;
+      const [min, max] = liveWindow(liveEdgeAt(liveEdgeRef.current, now));
+      if (livePendingRef.current) {
+        followEdgeRef.current = null;
+        initTimeline(min, max, livePendingRef.current, rateRef.current);
+        livePendingRef.current = null;
+        return;
+      }
+      setTimelineMin(min);
+      setDuration(max);
+      if (followEdgeRef.current === "window") setRange([min, max]);
+      if (followEdgeRef.current === "end") setRange(([start]) => [Math.max(start, min), max]);
+    }, LIVE_TICK_MS);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveMode, status, source]);
 
   const fmt = (s: number) => formatTime(s, true);
 
@@ -484,9 +590,9 @@ export function Looper() {
                 />
               )}
 
-              {phase === "active" && status === "ready" && duration > 0 && (
+              {phase === "active" && status === "ready" && duration > timelineMin && (
                 <ControlDeck
-                  min={0}
+                  min={timelineMin}
                   max={duration}
                   range={range}
                   playing={playing}
@@ -501,7 +607,7 @@ export function Looper() {
                   onPlayPause={playPause}
                   onRestart={restartLoop}
                   onFocus={toggle}
-                  onToggleTimeMode={() => setTimeMode((m) => (m === "video" ? "loop" : "video"))}
+                  onToggleTimeMode={() => setTimeMode((m) => nextTimeMode(m, liveMode))}
                   timeMode={timeMode}
                   looping={looping}
                   onToggleLoop={toggleLoop}
@@ -523,14 +629,18 @@ export function Looper() {
                   }
                 />
               )}
-              {phase === "active" && status === "ready" && duration > 0 && !focus && videoId && (
-                <SavedLoops
-                  videoId={videoId}
-                  current={{ videoId, start: range[0], end: range[1], rate }}
-                  onApply={applySavedLoop}
-                  format={fmt}
-                />
-              )}
+              {phase === "active" &&
+                status === "ready" &&
+                duration > timelineMin &&
+                !focus &&
+                videoId && (
+                  <SavedLoops
+                    videoId={videoId}
+                    current={{ videoId, start: range[0], end: range[1], rate }}
+                    onApply={applySavedLoop}
+                    format={fmt}
+                  />
+                )}
             </div>
           </div>
         )}

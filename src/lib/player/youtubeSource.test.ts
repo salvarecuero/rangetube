@@ -54,6 +54,13 @@ describe("YouTubeSource", () => {
     expect(player.playVideo).toHaveBeenCalledOnce();
     expect(player.pauseVideo).toHaveBeenCalledOnce();
   });
+  it("isLive reflects the player's video data, defaulting to false", () => {
+    const live = fakePlayer({ getVideoData: () => ({ isLive: true }) }).player;
+    const vod = fakePlayer({ getVideoData: () => ({ isLive: false }) }).player;
+    expect(new YouTubeSource(live).isLive()).toBe(true);
+    expect(new YouTubeSource(vod).isLive()).toBe(false);
+    expect(new YouTubeSource(fakePlayer().player).isLive()).toBe(false);
+  });
   it("isPlaying is true only when player state is PLAYING (1)", () => {
     expect(new YouTubeSource(fakePlayer({ getPlayerState: () => 1 }).player).isPlaying()).toBe(true);
     expect(new YouTubeSource(fakePlayer({ getPlayerState: () => 2 }).player).isPlaying()).toBe(false);

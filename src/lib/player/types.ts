@@ -15,6 +15,8 @@ export interface SourcePlayer {
   getCurrentTime(): number;
   /** Total media duration, in seconds (0 if unknown). */
   getDuration(): number;
+  /** Whether the media is a live stream whose seekable span keeps growing. */
+  isLive(): boolean;
   /** Seek to a position, in seconds. */
   seekTo(seconds: number): void;
   play(): void;
