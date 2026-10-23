@@ -15,7 +15,7 @@ export interface PlayerStageProps {
 
 export function PlayerStage({ status, hostRef, error, onRetry }: PlayerStageProps) {
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-stage)] bg-brand-900 shadow-2xl shadow-brand-900/25">
+    <div className="relative aspect-video w-full overflow-hidden rounded-[var(--radius-stage)] bg-brand-900 shadow-xl shadow-brand-900/15">
       {/* YT.Player replaces the inner mount node with an <iframe>, copying its
           class/id. So the mount carries no sizing/visibility class to inherit;
           the wrapper forces the resulting iframe to fill the 16:9 stage. */}

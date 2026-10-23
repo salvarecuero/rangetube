@@ -107,7 +107,7 @@ export function SavedLoops({
           type="button"
           onClick={onSave}
           aria-label="Save current loop"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[image:var(--rt-grad)] px-3 py-1.5 text-sm font-semibold text-brand-900 shadow transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[image:var(--rt-grad)] px-3 py-1.5 text-sm font-semibold text-brand-900 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
         >
           <Bookmark className="h-4 w-4" aria-hidden="true" />
           Save loop

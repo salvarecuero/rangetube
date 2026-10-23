@@ -151,7 +151,7 @@ export function ControlDeck({
       type="button"
       onClick={onPlayPause}
       aria-label={playing ? "Pause" : "Play"}
-      className="grid h-[50px] w-[50px] shrink-0 place-items-center rounded-full bg-[image:var(--rt-grad)] text-brand-900 shadow-lg shadow-brand-500/35 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+      className="grid h-[50px] w-[50px] shrink-0 place-items-center rounded-full bg-[image:var(--rt-grad)] text-brand-900 shadow-md shadow-brand-900/10 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
     >
       {playing ? (
         <Pause className="h-6 w-6" aria-hidden="true" />
@@ -328,7 +328,7 @@ export function ControlDeck({
       className={`rounded-[var(--radius-stage)] border p-3 transition-colors duration-500 @2xl:px-4 ${
         dark
           ? "border-white/10 bg-white/[0.06] backdrop-blur"
-          : "border-line bg-surface shadow-xl shadow-brand-900/5"
+          : "border-line/70 bg-surface/90 shadow-lg shadow-brand-900/[0.04]"
       }`}
     >
       {/* Row 1 - timeline, full width */}

@@ -20,7 +20,7 @@ export function YouTubeFacade({ videoId, onActivate }: YouTubeFacadeProps) {
       />
       <span
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_45%,rgba(16,185,129,.25),transparent_70%)]"
+        className="absolute inset-0 bg-[radial-gradient(80%_80%_at_50%_50%,transparent_45%,rgba(6,32,28,.35)_100%)]"
       />
       <span
         aria-hidden="true"

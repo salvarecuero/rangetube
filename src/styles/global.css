@@ -21,10 +21,10 @@
 
   /* surfaces (light airy) */
   --color-surface: #ffffff;
-  --color-bg: #eef5f3;
+  --color-bg: #e8eeeb;
   --color-bg-2: #e3f0ec;
   --color-ink: #0c211d;
-  --color-muted: #5b736d;
+  --color-muted: #526862;
   --color-line: #d6e6e1;
 
   /* focus-mode dark */
@@ -42,7 +42,12 @@
 }
 
 :root {
-  --rt-grad: linear-gradient(100deg, #0d9488 0%, #10b981 52%, #34d399 100%);
+  /* soft mint fill for primary actions (dark ink text on top) */
+  --rt-grad: linear-gradient(135deg, #c8f1e6 0%, #a3e3d4 100%);
+  /* the loop band: A's teal easing into B's coral, echoing the logo underline */
+  --rt-range: linear-gradient(90deg, #7ccfc2 0%, #c6dfb6 55%, #efb8a2 100%);
+  /* headline accent - deep enough to stay readable as text */
+  --rt-grad-text: linear-gradient(100deg, #0f766e 0%, #2a9d8a 100%);
 }
 
 html {
@@ -56,7 +61,11 @@ label[for] {
   cursor: pointer;
 }
 body {
-  background: var(--color-bg);
+  background:
+    radial-gradient(1100px 560px at 12% -8%, rgb(16 165 153 / 0.07), transparent 65%),
+    radial-gradient(900px 520px at 100% 108%, rgb(231 111 81 / 0.06), transparent 65%),
+    var(--color-bg);
+  background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-sans);
 }

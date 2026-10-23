@@ -181,10 +181,10 @@ export const RangeSlider = forwardRef<HTMLDivElement, RangeSliderProps>(function
             {text(hover.value)}
           </div>
         )}
-        <div className="absolute inset-x-0 h-2.5 rounded-full bg-line shadow-inner" />
+        <div className="absolute inset-x-0 h-2 rounded-full bg-line/80" />
         <div
           data-testid="slider-fill"
-          className="absolute h-2.5 rounded-full bg-[image:var(--rt-grad)] shadow-[0_4px_14px_rgba(16,185,129,.45)]"
+          className="absolute h-2 rounded-full bg-[image:var(--rt-range)]"
           style={{ left: pct(start), width: `calc(${pct(end)} - ${pct(start)})` }}
         />
         <div

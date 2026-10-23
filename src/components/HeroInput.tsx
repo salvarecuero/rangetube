@@ -24,7 +24,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
       <div className="flex flex-col justify-end pb-7">
         <h2 className="font-display mx-auto mb-4 max-w-[18ch] text-4xl font-bold leading-[1.06] tracking-tight @md:text-5xl">
           Loop the{" "}
-          <span className="bg-[image:var(--rt-grad)] bg-clip-text text-transparent">
+          <span className="bg-[image:var(--rt-grad-text)] bg-clip-text text-transparent">
             exact part
           </span>{" "}
           of any YouTube video
@@ -40,7 +40,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
           e.preventDefault();
           onSubmit();
         }}
-        className="mx-auto flex w-full max-w-2xl gap-2 rounded-2xl border border-line bg-white p-2 shadow-lg shadow-brand-900/5"
+        className="mx-auto flex w-full max-w-2xl gap-2 rounded-2xl border border-line/70 bg-white p-2 shadow-lg shadow-brand-900/[0.04]"
       >
         <label htmlFor="yt-url" className="sr-only">
           YouTube video URL
@@ -65,7 +65,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
         <button
           type="submit"
           aria-label="Load video"
-          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[image:var(--rt-grad)] px-3.5 py-2.5 font-semibold text-brand-900 shadow-md shadow-brand-500/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:px-5"
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[image:var(--rt-grad)] px-3.5 py-2.5 font-semibold text-brand-900 shadow-sm shadow-brand-900/10 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:px-5"
         >
           <ArrowRight className="h-5 w-5 sm:hidden" aria-hidden="true" strokeWidth={2.5} />
           <span className="hidden sm:inline">Load</span>
