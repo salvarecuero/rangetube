@@ -46,16 +46,16 @@ export const HOW_TOS: HowTo[] = [
       "YouTube's built-in loop repeats the whole video. To repeat just one part - a chorus, a clip, a single explanation - you set a start and end point and loop only that range. Here's how, free and with no sign-up.",
     steps: [
       {
-        name: "Paste the link",
-        text: "Copy the YouTube video URL and paste it into RangeTube on the home page.",
+        name: "Paste the link and press play",
+        text: "Copy the YouTube video URL, paste it into RangeTube on the home page, and press Play - the video starts right away.",
       },
       {
         name: "Set the range",
         text: "Drag the start and end handles to the part you want, or press [ to mark the start and ] to mark the end while the video plays.",
       },
       {
-        name: "Press play",
-        text: "Hit play and only that section repeats, endlessly, until you change the range.",
+        name: "Let it loop",
+        text: "Only that section repeats, endlessly, until you change the range.",
       },
     ],
     tips: [
@@ -75,8 +75,8 @@ export const HOW_TOS: HowTo[] = [
       "An \"A-B loop\" repeats the part of a video between two points: A (the start) and B (the end). It's the term musicians and language learners use for drilling one passage. RangeTube does it on any YouTube video - here's how.",
     steps: [
       {
-        name: "Paste the link",
-        text: "Paste the YouTube URL into RangeTube on the home page.",
+        name: "Paste the link and press play",
+        text: "Paste the YouTube URL into RangeTube on the home page and press Play.",
       },
       {
         name: "Set point A",
@@ -88,7 +88,7 @@ export const HOW_TOS: HowTo[] = [
       },
       {
         name: "Loop A to B",
-        text: "Press play - the video now repeats only between A and B, on a loop.",
+        text: "The video now repeats only between A and B, on a loop - move either point any time.",
       },
     ],
     tips: [
@@ -108,8 +108,8 @@ export const HOW_TOS: HowTo[] = [
       "Slowing a video down helps you catch fast speech, a quick lick, or detailed footwork. YouTube's player lowers the speed while keeping the pitch natural, so it still sounds right. Here's how to do it - and loop the slow part.",
     steps: [
       {
-        name: "Paste the link",
-        text: "Paste the YouTube URL into RangeTube on the home page.",
+        name: "Paste the link and press play",
+        text: "Paste the YouTube URL into RangeTube on the home page and press Play.",
       },
       {
         name: "Lower the speed",
@@ -132,7 +132,7 @@ export const HOW_TOS: HowTo[] = [
     h1: "How to loop a YouTube video on mobile (iPhone & Android)",
     metaTitle: "Loop a YouTube Video on Mobile (iPhone & Android)",
     metaDescription:
-      "Loop a section of a YouTube video on your phone - no app to install. Open RangeTube in your mobile browser, set the range, and tap play. Free, no sign-up.",
+      "Loop a section of a YouTube video on your phone - no app to install. Open RangeTube in your mobile browser, tap play, and set the range. Free, no sign-up.",
     intro:
       "You don't need an app to loop a YouTube video on your phone. RangeTube runs in any mobile browser on iPhone and Android, so you can repeat a section from the studio, the gym, or the couch. Here's how.",
     steps: [
@@ -141,16 +141,16 @@ export const HOW_TOS: HowTo[] = [
         text: "On your phone, open RangeTube in Safari, Chrome, or any mobile browser - there's nothing to install.",
       },
       {
-        name: "Paste the link",
-        text: "Copy the YouTube link from the YouTube app's Share menu and paste it into RangeTube.",
+        name: "Paste the link and tap play",
+        text: "Copy the YouTube link from the YouTube app's Share menu, paste it into RangeTube, and tap Play.",
       },
       {
         name: "Set the range",
         text: "Drag the start and end handles to the part you want, or use the time inputs to set it precisely.",
       },
       {
-        name: "Tap play",
-        text: "Tap play and the section loops on repeat - keep the tab open while you practise.",
+        name: "Let it loop",
+        text: "The section loops on repeat - keep the tab open while you practise.",
       },
     ],
     tips: [

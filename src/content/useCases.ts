@@ -45,9 +45,9 @@ export const USE_CASES: UseCase[] = [
       "Save loops per video, so your practice spots are still there next session.",
     ],
     steps: [
-      "Paste the URL of the lesson, backing track, or performance you want to practise.",
+      "Paste the URL of the lesson, backing track, or performance you want to practise, and press Play.",
       "Drag the start and end handles to frame the exact passage - a single bar, a phrase, or a whole section.",
-      "Hit play; the passage loops on repeat. Use the speed control to slow it down while you learn it.",
+      "The passage loops on repeat. Use the speed control to slow it down while you learn it.",
     ],
     faq: [
       {
