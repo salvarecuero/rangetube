@@ -45,8 +45,7 @@ async function renderPlaying() {
   fireEvent.change(screen.getByPlaceholderText(/youtube link/i), {
     target: { value: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
   });
-  fireEvent.click(screen.getByRole("button", { name: /load video/i }));
-  fireEvent.click(await screen.findByRole("button", { name: /play video/i }));
+  fireEvent.click(screen.getByRole("button", { name: /play this video/i }));
   await waitFor(() => expect(createPlayer).toHaveBeenCalled());
   // Wait for the ControlDeck to be rendered (status=ready + duration>0).
   await waitFor(() => expect(screen.getByRole("button", { name: /pause/i })).toBeInTheDocument());
@@ -61,8 +60,7 @@ async function renderActivated(player: ReturnType<typeof makeMockPlayer>) {
   fireEvent.change(screen.getByPlaceholderText(/youtube link/i), {
     target: { value: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
   });
-  fireEvent.click(screen.getByRole("button", { name: /load video/i }));
-  fireEvent.click(await screen.findByRole("button", { name: /play video/i }));
+  fireEvent.click(screen.getByRole("button", { name: /play this video/i }));
   await waitFor(() => expect(player.playVideo).toHaveBeenCalled());
 }
 
@@ -93,7 +91,7 @@ describe("Looper", () => {
 
   it("renders the hero input on first paint", () => {
     render(<Looper />);
-    expect(screen.getByRole("button", { name: /load video/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /play this video/i })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/youtube link/i)).toBeInTheDocument();
   });
 
@@ -223,15 +221,26 @@ describe("Looper", () => {
     );
   });
 
-  it("writes the video into the URL as soon as it is loaded, before playing", async () => {
+  it("plays a pasted link right away, skipping the click-to-load facade", async () => {
+    const player = makeMockPlayer();
+    createPlayerMock.mockResolvedValue({ ok: true, player });
     render(<Looper />);
     fireEvent.change(screen.getByPlaceholderText(/youtube link/i), {
       target: { value: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /load video/i }));
-    await screen.findByRole("button", { name: /play video/i });
+    fireEvent.click(screen.getByRole("button", { name: /play this video/i }));
     expect(window.location.search).toBe("?v=dQw4w9WgXcQ");
-    expect(createPlayerMock).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: /^play video$/i })).not.toBeInTheDocument();
+    await waitFor(() => expect(player.playVideo).toHaveBeenCalled());
+    expect(createPlayerMock).toHaveBeenCalledWith(expect.anything(), "dQw4w9WgXcQ");
+  });
+
+  it("plays the example right away", async () => {
+    const player = makeMockPlayer();
+    createPlayerMock.mockResolvedValue({ ok: true, player });
+    render(<Looper />);
+    fireEvent.click(screen.getByRole("button", { name: /try an example/i }));
+    await waitFor(() => expect(player.playVideo).toHaveBeenCalled());
   });
 
   it("pre-loads the facade from a video-only link", async () => {

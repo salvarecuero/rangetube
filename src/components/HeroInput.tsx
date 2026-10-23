@@ -1,4 +1,4 @@
-import { ArrowRight, ClipboardPaste } from "lucide-react";
+import { ClipboardPaste, Play } from "lucide-react";
 
 export interface HeroInputProps {
   value: string;
@@ -64,11 +64,11 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
         </button>
         <button
           type="submit"
-          aria-label="Load video"
+          aria-label="Play this video"
           className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[image:var(--rt-grad)] px-3.5 py-2.5 font-semibold text-brand-900 shadow-sm shadow-brand-900/10 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:px-5"
         >
-          <ArrowRight className="h-5 w-5 sm:hidden" aria-hidden="true" strokeWidth={2.5} />
-          <span className="hidden sm:inline">Load</span>
+          <Play className="h-4 w-4 fill-current" aria-hidden="true" />
+          <span className="hidden sm:inline">Play</span>
         </button>
       </form>
 
@@ -87,7 +87,7 @@ export function HeroInput({ value, onChange, onSubmit, onTryExample, error }: He
           ▶ Try an example
         </button>
         <ul className="mx-auto mt-8 flex w-fit flex-col items-start gap-3 text-sm text-brand-800 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6">
-          {["Paste a link", "Set start & end", "Press play"].map((s, i) => (
+          {["Paste a link", "Press play", "Set start & end"].map((s, i) => (
             <li key={s} className="flex items-center gap-2.5">
               <span className="grid h-6 w-6 place-items-center rounded-full border border-line bg-white text-xs text-brand-700">
                 {i + 1}

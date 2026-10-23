@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, X } from "lucide-react";
+import { Play, X } from "lucide-react";
 import { parseVideoId } from "../lib/youtube/parseVideoId";
 import { createPlayer } from "../lib/youtube/iframeApi";
 import { YouTubeSource } from "../lib/player/youtubeSource";
@@ -162,12 +162,15 @@ export function Looper() {
       return;
     }
     setError(null);
-    openFacade(id);
+    playNewVideo(id);
   }
 
-  function openFacade(id: string) {
+  // Loading from our own UI is already a user click, so play straight away;
+  // only shared links stop at the click-to-load facade.
+  function playNewVideo(id: string) {
     setVideoId(id);
-    setPhase("facade");
+    setPendingState(null);
+    void activate(id, null);
     try {
       window.history.replaceState(null, "", `${window.location.pathname}?v=${id}`);
     } catch {
@@ -228,7 +231,7 @@ export function Looper() {
     if (id === videoId) return;
     setError(null);
     teardownPlayer();
-    openFacade(id);
+    playNewVideo(id);
   }
 
   function handleTryExample() {
@@ -236,12 +239,15 @@ export function Looper() {
     const id = parseVideoId(DEMO_URL);
     if (id) {
       setError(null);
-      openFacade(id);
+      playNewVideo(id);
     }
   }
 
-  async function handleActivate() {
-    if (!videoId) return;
+  function handleActivate() {
+    if (videoId) void activate(videoId, pendingState);
+  }
+
+  async function activate(id: string, pending: LoopState | null) {
     setPhase("active");
     setStatus("loading");
     setStageError(null);
@@ -251,7 +257,7 @@ export function Looper() {
       requestAnimationFrame(() => resolve(playerHostRef.current)),
     );
     if (!host) return;
-    const result = await createPlayer(host, videoId);
+    const result = await createPlayer(host, id);
     if (!result.ok) {
       setStatus("error");
       setStageError(
@@ -276,7 +282,7 @@ export function Looper() {
     sourceRef.current = nextSource;
     setSource(nextSource);
     const dur = nextSource.getDuration();
-    const initialRate = pendingState?.rate ?? 1;
+    const initialRate = pending?.rate ?? 1;
     setRate(initialRate);
     if (initialRate !== 1) nextSource.setPlaybackRate(initialRate);
     const engine = new LoopEngine({
@@ -287,12 +293,12 @@ export function Looper() {
     engine.start();
     engineRef.current = engine;
     if (nextSource.isLive() || dur <= 0) {
-      livePendingRef.current = pendingState;
+      livePendingRef.current = pending;
       followEdgeRef.current = "window";
       setLiveMode(true);
       setTimeMode("live");
     } else {
-      initTimeline(0, dur, pendingState, initialRate);
+      initTimeline(0, dur, pending, initialRate);
     }
     setPendingState(null);
     // Activation is user-initiated (the facade click), so kick off playback now -
@@ -562,10 +568,10 @@ export function Looper() {
                   />
                   <button
                     type="submit"
-                    aria-label="Load this video"
+                    aria-label="Play this video"
                     className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[image:var(--rt-grad)] p-2 text-brand-900 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                   >
-                    <ArrowRight className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+                    <Play className="h-4 w-4 fill-current" aria-hidden="true" />
                   </button>
                 </form>
                 {error && (

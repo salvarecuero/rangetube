@@ -14,7 +14,7 @@ describe("HeroInput", () => {
         error={null}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: /load video/i }));
+    fireEvent.click(screen.getByRole("button", { name: /play this video/i }));
     expect(onSubmit).toHaveBeenCalled();
   });
   it("shows an inline error when provided", () => {
