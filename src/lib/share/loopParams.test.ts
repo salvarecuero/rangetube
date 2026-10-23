@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { encodeLoopParams, decodeLoopParams } from "./loopParams";
+import { encodeLoopParams, decodeLoopParams, decodeVideoParam } from "./loopParams";
 
 const VID = "dQw4w9WgXcQ";
 
@@ -48,5 +48,15 @@ describe("decodeLoopParams", () => {
   it("returns null on a negative start or unparseable numbers", () => {
     expect(decodeLoopParams(`v=${VID}&s=-1&e=2`)).toBeNull();
     expect(decodeLoopParams(`v=${VID}&s=x&e=2`)).toBeNull();
+  });
+});
+
+describe("decodeVideoParam", () => {
+  it("reads a bare video id without a range", () => {
+    expect(decodeVideoParam(`?v=${VID}`)).toBe(VID);
+  });
+  it("returns null for a missing or invalid id", () => {
+    expect(decodeVideoParam("")).toBeNull();
+    expect(decodeVideoParam("?v=nope")).toBeNull();
   });
 });

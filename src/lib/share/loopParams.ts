@@ -37,3 +37,9 @@ export function decodeLoopParams(search: string | URLSearchParams): LoopState | 
   const rate = rRaw === null ? 1 : snapRate(Number(rRaw));
   return { videoId, start, end, rate };
 }
+
+/** Read just the video id (`v`), for links that don't carry a range yet. */
+export function decodeVideoParam(search: string | URLSearchParams): string | null {
+  const p = typeof search === "string" ? new URLSearchParams(search) : search;
+  return parseVideoId(p.get("v") ?? "");
+}

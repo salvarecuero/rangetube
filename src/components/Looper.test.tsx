@@ -223,6 +223,23 @@ describe("Looper", () => {
     );
   });
 
+  it("writes the video into the URL as soon as it is loaded, before playing", async () => {
+    render(<Looper />);
+    fireEvent.change(screen.getByPlaceholderText(/youtube link/i), {
+      target: { value: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /load video/i }));
+    await screen.findByRole("button", { name: /play video/i });
+    expect(window.location.search).toBe("?v=dQw4w9WgXcQ");
+    expect(createPlayerMock).not.toHaveBeenCalled();
+  });
+
+  it("pre-loads the facade from a video-only link", async () => {
+    window.history.replaceState(null, "", "/?v=dQw4w9WgXcQ");
+    render(<Looper />);
+    expect(await screen.findByRole("button", { name: /play video/i })).toBeInTheDocument();
+  });
+
   it("pre-loads the facade from a deep link without instantiating the player", () => {
     window.history.replaceState(null, "", "/?v=dQw4w9WgXcQ&s=30&e=45&r=0.5");
     render(<Looper />);

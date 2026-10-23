@@ -18,7 +18,7 @@ import { YouTubeFacade } from "./YouTubeFacade";
 import { ControlDeck } from "./ControlDeck";
 import { SavedLoops } from "./SavedLoops";
 import { Compliance } from "./Compliance";
-import { encodeLoopParams, decodeLoopParams } from "../lib/share/loopParams";
+import { encodeLoopParams, decodeLoopParams, decodeVideoParam } from "../lib/share/loopParams";
 import type { LoopState } from "../lib/share/loopState";
 
 type Phase = "input" | "facade" | "active";
@@ -97,11 +97,12 @@ export function Looper() {
   // a render-phase initializer). The player still only loads on the facade click.
   useEffect(() => {
     const decoded = decodeLoopParams(window.location.search);
-    if (!decoded) return;
+    const id = decoded?.videoId ?? decodeVideoParam(window.location.search);
+    if (!id) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL read on mount
-    setVideoId(decoded.videoId);
+    setVideoId(id);
     setPendingState(decoded);
-    setUrlInput(`https://www.youtube.com/watch?v=${decoded.videoId}`);
+    setUrlInput(`https://www.youtube.com/watch?v=${id}`);
     setPhase("facade");
   }, []);
   useEffect(() => {
@@ -161,8 +162,17 @@ export function Looper() {
       return;
     }
     setError(null);
+    openFacade(id);
+  }
+
+  function openFacade(id: string) {
     setVideoId(id);
     setPhase("facade");
+    try {
+      window.history.replaceState(null, "", `${window.location.pathname}?v=${id}`);
+    } catch {
+      /* sandboxed iframe may block history - best-effort */
+    }
   }
 
   function teardownPlayer() {
@@ -218,8 +228,7 @@ export function Looper() {
     if (id === videoId) return;
     setError(null);
     teardownPlayer();
-    setVideoId(id);
-    setPhase("facade");
+    openFacade(id);
   }
 
   function handleTryExample() {
@@ -227,8 +236,7 @@ export function Looper() {
     const id = parseVideoId(DEMO_URL);
     if (id) {
       setError(null);
-      setVideoId(id);
-      setPhase("facade");
+      openFacade(id);
     }
   }
 
@@ -555,7 +563,7 @@ export function Looper() {
                   <button
                     type="submit"
                     aria-label="Load this video"
-                    className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[image:var(--rt-grad)] p-2 text-brand-900 shadow transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                    className="inline-flex shrink-0 items-center justify-center rounded-lg bg-[image:var(--rt-grad)] p-2 text-brand-900 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                   >
                     <ArrowRight className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
                   </button>
@@ -691,7 +699,7 @@ export function Looper() {
                   setConfirmReset(false);
                   resetToStart();
                 }}
-                className="rounded-xl bg-[image:var(--rt-grad)] px-4 py-2 text-sm font-semibold text-brand-900 shadow-md shadow-brand-500/30 transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="rounded-xl bg-[image:var(--rt-grad)] px-4 py-2 text-sm font-semibold text-brand-900 shadow-sm shadow-brand-900/10 ring-1 ring-brand-700/10 transition hover:brightness-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Leave
               </button>
